@@ -21,7 +21,7 @@ echo                                         One Moment, Loading..
 echo.
 echo.
 echo.
-type "mgascii"
+type "ascii"
 echo.
 echo.
 echo.
