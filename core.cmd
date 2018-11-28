@@ -33,16 +33,34 @@ type "ascii"
 echo.
 echo.
 echo.
-echo Checking for previous Account(Wallet)..
-IF EXIST "%DIR%\usr.txt" GOTO MGFOUND
-IF NOT EXIST "%DIR%\usr.txt" GOTO MGNOTFOUND
-:MGFOUND
+:CHKLOCAL
+echo Checking for previous Account(Wallet).. - Local
+IF EXIST "%DIR%\usr.txt" GOTO LOCALFOUND
+IF NOT EXIST "%DIR%\usr.txt" GOTO LOCALNOTFOUND
+:LOCALFOUND
+call :colorEcho 0A  "   FOUND!    "
+echo.
+timeout /t 2 /NOBREAK>NUL
+cls
+GOTO CHKMINERDIR
+:LOCALNOTFOUND
+call :colorEcho 08  "   NOT FOUND!"
+echo.
+timeout /t 2 /NOBREAK>NUL
+cls
+GOTO CHKMINERDIR
+
+:CHKMINERDIR
+echo Checking for previous Account(Wallet) in alternative location..
+IF EXIST "%MINERDIR%\usr.txt" GOTO MINERFOUND
+IF NOT EXIST "%MINERDIR%\usr.txt" GOTO MINERNOTFOUND
+:MINERFOUND
 call :colorEcho 0A  "   FOUND!    "
 echo.
 timeout /t 2 /NOBREAK>NUL
 cls
 GOTO MENU
-:MGNOTFOUND
+:MINERNOTFOUND
 call :colorEcho 08  "   NOT FOUND!"
 echo.
 timeout /t 2 /NOBREAK>NUL
@@ -65,7 +83,7 @@ call :colorEcho 03 "                                              %EDITION%"
 echo.
 call :colorEcho 08 "O============================================================================================================O"
 echo.
-IF EXIST "%DIR%\usr.txt" echo. && echo                                   Account(Wallet): %WALLET%
+IF EXIST "%MINERDIR%\usr.txt" echo. && echo                                   Account(Wallet): %WALLET%
 echo.
 echo  ------------------------------------------------------------------------------------------------------------
 call :colorEcho 08 "      Choose a Option[#]"
