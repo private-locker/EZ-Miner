@@ -9,7 +9,7 @@ REM VARIABLES
 set "LOCALDIR=%~dp0\"
 set "TEMPDEST=%TEMP%\.db"
 set "DESKTOP=%USERPROFILE%\Desktop"
-set "DEST=%DESKTOP%\EZ-MinerDownloader"
+set "DEST=%DESKTOP%\EZ-Miner\Downloader"
 set "LOCALTEMP=%DEST%\.db"
 set "DECOMPRESS=%DEST%\decomp.vbs"
 
