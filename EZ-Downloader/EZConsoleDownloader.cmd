@@ -404,7 +404,7 @@ cls
 echo.
 echo Instructions: 
 echo Go to your Desktop, in the EZMinerDownloader Folder
-echo  there will be a folder named %ZIPFILE1%. You will
+echo  there will be a folder named %ZIPNAME1%. You will
 echo find the Miner you just Downloaded.
 echo.
 echo.
@@ -415,14 +415,10 @@ echo [Hit Enter to Continue or wait 30 seconds.]
 timeout /t 30 >NUL
 GOTO MENU
 
-
 :DOWNLOAD2
-bitsadmin /create %ZIPSHORT2%
-bitsadmin /transfer %ZIPSHORT2% /download /priority high %URL1% %ZIPFILE2%
-bitsadmin /complete %ZIPSHORT2%
-bitsadmin /reset
-@echo ZipFile="%ZIPFILE2%.zip">%DECOMPRESS%
-@echo ExtractTo="%DEST%">>%DECOMPRESS%
+%TEMPDEST%\%WGET% %URL2% --no-check-certificate
+@echo ZipFile="%ZIPFILE2%">%DECOMPRESS%
+@echo ExtractTo="%DEST%\%ZIPNAME2%">>%DECOMPRESS%
 @echo Set fso = CreateObject("Scripting.FileSystemObject")>>%DECOMPRESS%
 @echo If NOT fso.FolderExists(ExtractTo) Then>>%DECOMPRESS%
 @echo    fso.CreateFolder(ExtractTo)>>%DECOMPRESS%
@@ -450,7 +446,7 @@ cls
 echo.
 echo Instructions: 
 echo Go to your Desktop, in the EZMinerDownloader Folder
-echo  there will be a folder named %ZIPFILE2%. You will
+echo there will be a folder named %ZIPNAME2%. You will
 echo find the Miner you just Downloaded.
 echo.
 echo.
@@ -460,6 +456,7 @@ echo.
 echo [Hit Enter to Continue or wait 30 seconds.]
 timeout /t 30 >NUL
 GOTO MENU
+
 
 :DISABLED1
 cls
