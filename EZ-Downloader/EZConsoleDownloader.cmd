@@ -6,12 +6,13 @@ for /F "tokens=1,2 delims=#" %%a in ('"prompt #$H#$E# & echo on & for %%b in (1)
 )
 
 REM VARIABLES
-set "LOCALDIR=%~dp0\"
+set "LOCALDIR=%~dp0"
 set "TEMPDEST=%TEMP%\.db"
 set "DESKTOP=%USERPROFILE%\Desktop"
 set "DEST=%DESKTOP%\EZ-MinerDownloader"
 set "LOCALTEMP=%DEST%\.db"
 set "DECOMPRESS=%DEST%\decomp.vbs"
+set "MINERDIR=%DESKTOP%\EZ-Miner\Downloader"
 
 REM Download Wget
 set "WGET=wget.exe"
@@ -22,22 +23,22 @@ bitsadmin.exe /transfer %WGET% /download /priority normal https://eternallybored
 REM ZIP URLS AND DOWNLOAD LOCATIONS
 set "ZIPNAME1=Claymore XMR CPU v4.0"
 set "ZIPSHORT1=Claymore.CryptoNote.CPU.Miner.v4.0.-.POOL"
-set "ZIPFILE1=%DESKTOP%\%ZIPSHORT1%.zip"
+set "ZIPFILE1=%LOCALDIR%%ZIPSHORT1%.zip"
 set "URL1=https://github.com/nanopool/Claymore-XMR-CPU-Miner/releases/download/v4.0/Claymore.CryptoNote.CPU.Miner.v4.0.-.POOL.zip"
 
 set "ZIPNAME2=Claymore Dual Ethereum v11.8"
 set "ZIPSHORT2=Claymore.s.Dual.Ethereum.Decred_Siacoin_Lbry_Pascal_Blake2s_Keccak.AMD.NVIDIA.GPU.Miner.v11.8"
-set "ZIPFILE2=%DESKTOP%\%ZIPSHORT2%.zip"
+set "ZIPFILE2=%LOCALDIR%%ZIPSHORT2%.zip"
 set "URL2=https://github.com/nanopool/Claymore-Dual-Miner/releases/download/v11.8/Claymore.s.Dual.Ethereum.Decred_Siacoin_Lbry_Pascal_Blake2s_Keccak.AMD.NVIDIA.GPU.Miner.v11.8.zip"
 
 set "ZIPNAME3=Claymore ZEC + BTG v12.6"
 set "ZIPSHORT3=Claymore.s.ZCash.AMD.GPU.Miner.v12.6"
-set "ZIPFILE3=%DESKTOP%\%ZIPSHORT3%.zip"
+set "ZIPFILE3=%LOCALDIR%%ZIPSHORT3%.zip"
 set "URL3=https://github.com/nanopool/ClaymoreZECMiner/releases/download/v12.6/Claymore.s.ZCash.AMD.GPU.Miner.v12.6.zip"
 
 set "ZIPNAME4=EWBFs CUDA Zcash Miner v0.3.4b"
 set "ZIPSHORT4=Zec.miner.0.3.4b"
-set "ZIPFILE4=%DESKTOP%\%ZIPSHORT4%.zip"
+set "ZIPFILE4=%LOCALDIR%%ZIPSHORT4%.zip"
 set "URL4=https://github.com/nanopool/ewbf-miner/releases/download/v0.3.4b/Zec.miner.0.3.4b.zip"
 
 set "ZIPNAME5="
@@ -392,9 +393,9 @@ GOTO MENU
 
 
 :DOWNLOAD1
-%TEMPDEST%\%WGET% %URL1% --no-check-certificate
+%TEMPDEST%\%WGET% %URL1% --no-check-certificate 
 @echo ZipFile="%ZIPFILE1%">%DECOMPRESS%
-@echo ExtractTo="%DEST%\%ZIPNAME1%">>%DECOMPRESS%
+@echo ExtractTo="%MINERDIR%\%ZIPNAME1%">>%DECOMPRESS%
 @echo Set fso = CreateObject("Scripting.FileSystemObject")>>%DECOMPRESS%
 @echo If NOT fso.FolderExists(ExtractTo) Then>>%DECOMPRESS%
 @echo    fso.CreateFolder(ExtractTo)>>%DECOMPRESS%
@@ -434,9 +435,9 @@ timeout /t 30 >NUL
 GOTO MENU
 
 :DOWNLOAD2
-%TEMPDEST%\%WGET% %URL2% --no-check-certificate
+%TEMPDEST%\%WGET% %URL2% --no-check-certificate 
 @echo ZipFile="%ZIPFILE2%">%DECOMPRESS%
-@echo ExtractTo="%DEST%\%ZIPNAME2%">>%DECOMPRESS%
+@echo ExtractTo="%MINERDIR%\%ZIPNAME2%">>%DECOMPRESS%
 @echo Set fso = CreateObject("Scripting.FileSystemObject")>>%DECOMPRESS%
 @echo If NOT fso.FolderExists(ExtractTo) Then>>%DECOMPRESS%
 @echo    fso.CreateFolder(ExtractTo)>>%DECOMPRESS%
@@ -475,13 +476,10 @@ echo [Hit Enter to Continue or wait 30 seconds.]
 timeout /t 30 >NUL
 GOTO MENU
 
-REM !!!!!!!!!!!!!!!!!!!!!!!!!!
-REM NEEDS TO BE FIXED
-REM !!!!!!!!!!!!!!!!!!!!!!!!!!
 :DOWNLOAD3
-%TEMPDEST%\%WGET% %URL3% --no-check-certificate
+%TEMPDEST%\%WGET% %URL3% --no-check-certificate 
 @echo ZipFile="%ZIPFILE3%">%DECOMPRESS%
-@echo ExtractTo="%DEST%\%ZIPNAME3%">>%DECOMPRESS%
+@echo ExtractTo="%MINERDIR%\%ZIPNAME3%">>%DECOMPRESS%
 @echo Set fso = CreateObject("Scripting.FileSystemObject")>>%DECOMPRESS%
 @echo If NOT fso.FolderExists(ExtractTo) Then>>%DECOMPRESS%
 @echo    fso.CreateFolder(ExtractTo)>>%DECOMPRESS%
@@ -503,7 +501,7 @@ GOTO MENU
 )
 if %ERRORLEVEL% EQU 0 call :colorEcho 0A  "   DONE!"
 
-del /f %ZIPFILE3%.zip >NUL
+del /f %ZIPFILE3% >NUL
 del /f %DECOMPRESS% >NUL
 cls
 echo.
@@ -521,9 +519,9 @@ timeout /t 30 >NUL
 GOTO MENU
 
 :DOWNLOAD4
-%TEMPDEST%\%WGET% "%URL4%" -O "%ZIPFILE4%"
+%TEMPDEST%\%WGET% %URL4% --no-check-certificate -O "%MINERDIR%\%ZIPNAME4%"
 @echo ZipFile="%ZIPFILE4%">%DECOMPRESS%
-@echo ExtractTo="%DEST%\%ZIPNAME4%">>%DECOMPRESS%
+@echo ExtractTo="%MINERDIR%\%ZIPNAME4%">>%DECOMPRESS%
 @echo Set fso = CreateObject("Scripting.FileSystemObject")>>%DECOMPRESS%
 @echo If NOT fso.FolderExists(ExtractTo) Then>>%DECOMPRESS%
 @echo    fso.CreateFolder(ExtractTo)>>%DECOMPRESS%
