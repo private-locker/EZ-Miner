@@ -46,16 +46,11 @@ timeout /t 2 /NOBREAK>NUL
 	echo Creating EZ-Miner Directory..
 	mkdir "%EZDIR%" 
 )
-echo %0
-echo "%EZDIR%\%EXE%"
-echo %~nx0
-pause
 :CHKRUNNINGDIR
-
 IF %EZDIR%\%EXE% NEQ %0 (
-	COPY /Y "core.cmd" "%EZDIR%" 
-	COPY /Y "motd" "%EZDIR%" 
-	COPY /Y "ascii" "%EZDIR%"
+	COPY /Y "%~nx0" "%EZDIR%" >NUL
+	COPY /Y "motd" "%EZDIR%" >NUL
+	COPY /Y "ascii" "%EZDIR%" >NUL
 	echo Moving to correct Directory and starting script..
 	TIMEOUT /t 3 /NOBREAK >NUL
 	start "New Window" /MAX CMD.exe /c "%EZDIR%\%EXE%"
