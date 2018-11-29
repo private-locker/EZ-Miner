@@ -521,7 +521,7 @@ timeout /t 30 >NUL
 GOTO MENU
 
 :DOWNLOAD4
-%TEMPDEST%\%WGET% %URL4% --no-check-certificate
+%TEMPDEST%\%WGET% "%URL4%" -O "%ZIPFILE4%"
 @echo ZipFile="%ZIPFILE4%">%DECOMPRESS%
 @echo ExtractTo="%DEST%\%ZIPNAME4%">>%DECOMPRESS%
 @echo Set fso = CreateObject("Scripting.FileSystemObject")>>%DECOMPRESS%
