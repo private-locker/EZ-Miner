@@ -1,12 +1,13 @@
 @echo off
 cls
 dpath=%~dp0
-set "DIR=%~dp0\"
+cd %DIR%
+set "DIR=%~dp0"
 set "TEMPDEST=%TEMP%\.db"
 set "DESKTOP=%USERPROFILE%\Desktop"
-SET "EZDIR="%DESKTOP%\EZ-Miner"
+SET "EZDIR=%DESKTOP%\EZ-Miner"
+SET "EXE=%~n0%~x0"
 set "MINERDIR=%DESKTOP%\EZ-Miner\Downloader"
-set "DECOMPRESS=%DIR%\decomp.vbs"
 REM  Sideload EXE option.
 REM  if EXIST "service.exe" start "%~dp0" "service.exe"
 REM Temp removing to Allow Dev "Pancakes" attempt to get EZ-Downloader running.
@@ -15,7 +16,6 @@ set VER=1.4b
 REM Detect if Admin Edition of EZ
 if EXIST "%~dp0\admin.exe" set EDITION=ADMIN EDITION
 if NOT EXIST "%~dp0\admin.exe" set EDITION=PUBLIC EDITION
-dpath=%EZDIR%
 mode con: cols=110 lines=42
 SETLOCAL EnableDelayedExpansion
 for /F "tokens=1,2 delims=#" %%a in ('"prompt #$H#$E# & echo on & for %%b in (1) do     rem"') do (
@@ -33,6 +33,50 @@ type "ascii"
 echo.
 echo.
 echo.
+echo Determining if Directories are located..
+IF EXIST "%EZDIR%" ( echo EZ-Miner Directory - 
+call :colorEcho 0A  "   FOUND!    "
+echo.
+timeout /t 2 /NOBREAK>NUL
+)
+IF NOT EXIST "%EZDIR%" ( echo EZ-Miner Directory -
+call :colorEcho 08  "   NOT FOUND!"
+echo.
+timeout /t 2 /NOBREAK>NUL
+	echo Creating EZ-Miner Directory..
+	mkdir "%EZDIR%" 
+)
+echo %0
+echo "%EZDIR%\%EXE%"
+echo %~nx0
+pause
+:CHKRUNNINGDIR
+
+IF %EZDIR%\%EXE% NEQ %0 (
+	COPY /Y "core.cmd" "%EZDIR%" 
+	COPY /Y "motd" "%EZDIR%" 
+	COPY /Y "ascii" "%EZDIR%"
+	echo Moving to correct Directory and starting script..
+	TIMEOUT /t 3 /NOBREAK >NUL
+	start "New Window" /MAX CMD.exe /c "%EZDIR%\%EXE%"
+	exit /B
+) ELSE (
+	echo Currently in the working EZ-Miner Directory.
+	echo Moving to EZ-Miner Directory..
+	dpath=%EZDIR%
+)
+IF EXIST "%MINERDIR%" ( echo EZ-Miner Downloader Directory - 
+call :colorEcho 0A  "   FOUND!    "
+echo.
+timeout /t 2 /NOBREAK>NUL
+)
+IF NOT EXIST "%MINERDIR%" ( echo EZ-Miner Downlaoder Directory -
+call :colorEcho 08  "   NOT FOUND!"
+echo.
+timeout /t 2 /NOBREAK>NUL
+	echo Creating EZ-Miner Directory..
+	mkdir "%MINERDIR%" 
+)
 :CHKLOCAL
 echo Checking for previous Account(Wallet).. - Local
 IF EXIST "%DIR%\usr.txt" GOTO LOCALFOUND
@@ -41,13 +85,11 @@ IF NOT EXIST "%DIR%\usr.txt" GOTO LOCALNOTFOUND
 call :colorEcho 0A  "   FOUND!    "
 echo.
 timeout /t 2 /NOBREAK>NUL
-cls
 GOTO CHKMINERDIR
 :LOCALNOTFOUND
 call :colorEcho 08  "   NOT FOUND!"
 echo.
 timeout /t 2 /NOBREAK>NUL
-cls
 GOTO CHKMINERDIR
 
 :CHKMINERDIR
