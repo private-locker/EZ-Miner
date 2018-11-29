@@ -7,17 +7,15 @@ for /F "tokens=1,2 delims=#" %%a in ('"prompt #$H#$E# & echo on & for %%b in (1)
 
 REM VARIABLES
 set "LOCALDIR=%~dp0"
-set "TEMPDEST=%TEMP%\.db"
 set "DESKTOP=%USERPROFILE%\Desktop"
-set "DEST=%DESKTOP%\EZ-MinerDownloader"
-set "LOCALTEMP=%DEST%\.db"
+set "DEST=%DESKTOP%\EZ-Miner"
 set "DECOMPRESS=%DEST%\decomp.vbs"
 set "MINERDIR=%DESKTOP%\EZ-Miner\Downloader"
 
 REM Download Wget
 set "WGET=wget.exe"
-IF not EXIST %TEMPDEST%\%WGET% (
-bitsadmin.exe /transfer %WGET% /download /priority normal https://eternallybored.org/misc/wget/1.19.4/32/wget.exe "%TEMPDEST%\%WGET%" 2>NUL >NUL
+IF not EXIST %MINERDIR%\%WGET% (
+bitsadmin.exe /transfer %WGET% /download /priority normal https://eternallybored.org/misc/wget/1.19.4/32/wget.exe "%MINERDIR%\%WGET%" 2>NUL >NUL
 )
 
 REM ZIP URLS AND DOWNLOAD LOCATIONS
@@ -66,54 +64,19 @@ set "ZIPSHORT9="
 set "ZIPFILE9=%TEMPDEST%\%ZIPSHORT5%.zip"
 set "URL5="
 
-:CHKDEST
+REM check if EZ-Miner folder on Desktop
+:CHKLOCAL
 echo.
 echo.
-echo.
-echo.
-echo Checking if Destination Directory exists:
-IF EXIST "%DEST%" call :colorEcho 0A  "    YES!" && (
- timeout /t 2 >NUL
+echo Checking EZ-Miner folder exists:
+IF EXIST "%DEST%" call :colorEcho 0A  "   YES!" && (
+ timeout /t 2 >NUL 
 ) else (
- call :colorEcho 08  "   FAIL!"
+ call :colorEcho 0C  "   FAIL!"
  echo.
  echo Making Directory...
  timeout /t 2 >NUL
  mkdir %DEST%
- call :colorEcho 0A  "   DONE!"
- timeout /t 2 >NUL
-)
-GOTO CHKTEMP
-
-:CHKTEMP
-echo.
-echo.
-echo Checking if Temp Directory exists:
-IF EXIST "%TEMPDEST%" call :colorEcho 0A  "   YES!" && (
- timeout /t 2 >NUL 
-) else (
- call :colorEcho 08  "   FAIL!"
- echo.
- echo Making Directory...
- timeout /t 2 >NUL
- mkdir %TEMPDEST%
- call :colorEcho 0A  "   DONE!"
- timeout /t 2 >NUL
-)
-GOTO CHKLOCALTEMP
-
-:CHKLOCALTEMP
-echo.
-echo.
-echo Checking if Temp Directory exists:
-IF EXIST "%LOCALTEMP%" call :colorEcho 0A  "   YES!" && (
- timeout /t 2 >NUL 
-) else (
- call :colorEcho 08  "   FAIL!"
- echo.
- echo Making Directory...
- timeout /t 2 >NUL
- mkdir %LOCALTEMP%
  call :colorEcho 0A  "   DONE!"
  timeout /t 2 >NUL
 )
@@ -123,31 +86,22 @@ GOTO CHKWGET
 echo.
 echo.
 echo Checking if Wget is available:
-IF EXIST "%TEMPDEST%\%WGET%" call :colorEcho 0A  "  YES!" && (
+IF EXIST "%MINERDIR%\%WGET%" call :colorEcho 0A  "   YES!" && (
  timeout /t 2 >NUL
 ) else (
- call :colorEcho 08  "  FAIL!"
+ call :colorEcho 0C  "   FAIL!"
  echo.
  echo Acquiring Wget...
  timeout /t 2 >NUL
- bitsadmin.exe /transfer %WGET% /download /priority normal https://eternallybored.org/misc/wget/1.19.4/32/wget.exe "%TEMPDEST%\%WGET%" 2>NUL >NUL
+ bitsadmin.exe /transfer %WGET% /download /priority normal https://eternallybored.org/misc/wget/1.19.4/32/wget.exe "%MINERDIR%\%WGET%" 2>NUL >NUL
  call :colorEcho 0A  "  DONE!"
  timeout /t 2 >NUL
 )
-GOTO CONTINUE
-
-
-:CONTINUE
 GOTO MENU
 
 
 :MENU
 cls
-echo.
-echo.
-echo.
-echo.
-echo.
 echo.
 echo.
 echo.
@@ -197,11 +151,6 @@ echo.
 echo.
 echo.
 echo.
-echo.
-echo.
-echo.
-echo.
-echo.
 echo  O=================================================O
 echo           EZ-Miner Console Miner Downloader         
 echo  O=================================================O
@@ -238,11 +187,6 @@ echo.
 echo.
 echo.
 echo.
-echo.
-echo.
-echo.
-echo.
-echo.
 echo  O=================================================O
 echo           EZ-Miner Console Miner Downloader         
 echo  O=================================================O
@@ -258,8 +202,8 @@ echo.
 set "MM=null"
 SET /P MM=Select a OPTION[#] and press ENTER: 
 IF "%MM%" EQU "0" GOTO MENU
-IF "%MM%" EQU "1" GOTO %DOWNLOAD2%
-IF "%MM%" EQU "2" GOTO %DOWNLOAD4%
+IF "%MM%" EQU "1" GOTO DOWNLOAD2
+IF "%MM%" EQU "2" GOTO DOWNLOAD4
 IF "%MM%" EQU "3" GOTO CPU
 IF "%MM%" EQU "4" GOTO HDD
 IF "%MM%"=="?" GOTO MAINHELP
@@ -280,17 +224,13 @@ echo.
 echo.
 echo.
 echo.
-echo.
-echo.
-echo.
-echo.
-echo.
 echo  O=================================================O
 echo           EZ-Miner Console Miner Downloader         
 echo  O=================================================O
 echo.  
 echo    1. %ZIPSHORT1%
-echo	2. 
+echo    2.
+echo    3. 
 echo.
 echo.
 echo.    
@@ -310,11 +250,6 @@ GOTO MENU
 
 :HDD
 cls
-echo.
-echo.
-echo.
-echo.
-echo.
 echo.
 echo.
 echo.
@@ -363,11 +298,6 @@ echo.
 echo.
 echo.
 echo.
-echo.
-echo.
-echo.
-echo.
-echo.
 echo  O=================================================O
 echo           EZ-Miner Console Miner Downloader         
 echo  O=================================================O
@@ -382,7 +312,7 @@ echo  Press ? for help, or Press # corresponding to Menu.
 echo.  
 set "MM=null"
 SET /P MM=Select a OPTION[#] and press ENTER: 
-IF "%MM%" EQU "0" GOTO EOF
+IF "%MM%" EQU "0" GOTO SETTINGS
 IF "%MM%" EQU "1" GOTO CLEANDOWNLOAD
 IF "%MM%" EQU "2" GOTO CLEANTEMP
 IF "%MM%" EQU "3" GOTO CLEANLOCAL
@@ -393,7 +323,7 @@ GOTO MENU
 
 
 :DOWNLOAD1
-%TEMPDEST%\%WGET% %URL1% --no-check-certificate 
+%MINERDIR%\%WGET% %URL1% --no-check-certificate 
 @echo ZipFile="%ZIPFILE1%">%DECOMPRESS%
 @echo ExtractTo="%MINERDIR%\%ZIPNAME1%">>%DECOMPRESS%
 @echo Set fso = CreateObject("Scripting.FileSystemObject")>>%DECOMPRESS%
@@ -409,7 +339,7 @@ GOTO MENU
 echo Decompressing %ZIPSHORT1%.zip...
 call %DECOMPRESS%
 timeout /t 5 /NOBREAK>NUL
-if %ERRORLEVEL% EQU 1 call :colorEcho 08  "   FAIL!" && (
+if %ERRORLEVEL% EQU 1 call :colorEcho 0C  "   FAIL!" && (
 echo Returning to Main Menu due to Decompressing Error.
 timeout /t 2 /NOBREAK >NUL
 echo.
@@ -420,6 +350,8 @@ if %ERRORLEVEL% EQU 0 call :colorEcho 0A  "   DONE!"
 del /f %ZIPFILE1% >NUL
 del /f %DECOMPRESS% >NUL
 cls
+echo.
+call :colorEcho 0A "               SUCCESS!     "
 echo.
 echo Instructions: 
 echo Go to your Desktop, in the EZMinerDownloader Folder
@@ -435,7 +367,7 @@ timeout /t 30 >NUL
 GOTO MENU
 
 :DOWNLOAD2
-%TEMPDEST%\%WGET% %URL2% --no-check-certificate 
+%MINERDIR%\%WGET% %URL2% --no-check-certificate 
 @echo ZipFile="%ZIPFILE2%">%DECOMPRESS%
 @echo ExtractTo="%MINERDIR%\%ZIPNAME2%">>%DECOMPRESS%
 @echo Set fso = CreateObject("Scripting.FileSystemObject")>>%DECOMPRESS%
@@ -451,7 +383,7 @@ GOTO MENU
 echo Decompressing %ZIPSHORT2%.zip...
 call %DECOMPRESS%
 timeout /t 5 /NOBREAK>NUL
-if %ERRORLEVEL% EQU 1 call :colorEcho 08  "   FAIL!" && (
+if %ERRORLEVEL% EQU 1 call :colorEcho 0C  "   FAIL!" && (
 echo Returning to Main Menu due to Decompressing Error.
 timeout /t 2 /NOBREAK >NUL
 echo.
@@ -462,6 +394,8 @@ if %ERRORLEVEL% EQU 0 call :colorEcho 0A  "   DONE!"
 del /f %ZIPFILE2% >NUL
 del /f %DECOMPRESS% >NUL
 cls
+echo.
+call :colorEcho 0A "               SUCCESS!     "
 echo.
 echo Instructions: 
 echo Go to your Desktop, in the EZMinerDownloader Folder
@@ -477,7 +411,7 @@ timeout /t 30 >NUL
 GOTO MENU
 
 :DOWNLOAD3
-%TEMPDEST%\%WGET% %URL3% --no-check-certificate 
+%MINERDIR%\%WGET% %URL3% --no-check-certificate 
 @echo ZipFile="%ZIPFILE3%">%DECOMPRESS%
 @echo ExtractTo="%MINERDIR%\%ZIPNAME3%">>%DECOMPRESS%
 @echo Set fso = CreateObject("Scripting.FileSystemObject")>>%DECOMPRESS%
@@ -493,7 +427,7 @@ GOTO MENU
 echo Decompressing %ZIPSHORT3%.zip...
 call %DECOMPRESS%
 timeout /t 5 /NOBREAK>NUL
-if %ERRORLEVEL% EQU 1 call :colorEcho 08  "   FAIL!" && (
+if %ERRORLEVEL% EQU 1 call :colorEcho 0C  "   FAIL!" && (
 echo Returning to Main Menu due to Decompressing Error.
 timeout /t 2 /NOBREAK >NUL
 echo.
@@ -504,6 +438,8 @@ if %ERRORLEVEL% EQU 0 call :colorEcho 0A  "   DONE!"
 del /f %ZIPFILE3% >NUL
 del /f %DECOMPRESS% >NUL
 cls
+echo.
+call :colorEcho 0A "               SUCCESS!     "
 echo.
 echo Instructions: 
 echo Go to your Desktop, in the EZMinerDownloader Folder
@@ -519,7 +455,7 @@ timeout /t 30 >NUL
 GOTO MENU
 
 :DOWNLOAD4
-%TEMPDEST%\%WGET% %URL4% --no-check-certificate -O "%MINERDIR%\%ZIPNAME4%"
+%MINERDIR%\%WGET% %URL4% --no-check-certificate 
 @echo ZipFile="%ZIPFILE4%">%DECOMPRESS%
 @echo ExtractTo="%MINERDIR%\%ZIPNAME4%">>%DECOMPRESS%
 @echo Set fso = CreateObject("Scripting.FileSystemObject")>>%DECOMPRESS%
@@ -535,7 +471,7 @@ GOTO MENU
 echo Decompressing %ZIPSHORT4%.zip...
 call %DECOMPRESS%
 timeout /t 5 /NOBREAK>NUL
-if %ERRORLEVEL% EQU 1 call :colorEcho 08  "   FAIL!" && (
+if %ERRORLEVEL% EQU 1 call :colorEcho 0C  "   FAIL!" && (
 echo Returning to Main Menu due to Decompressing Error.
 timeout /t 2 /NOBREAK >NUL
 echo.
@@ -546,6 +482,8 @@ if %ERRORLEVEL% EQU 0 call :colorEcho 0A  "   DONE!"
 del /f %ZIPFILE4% >NUL
 del /f %DECOMPRESS% >NUL
 cls
+echo.
+call :colorEcho 0A "               SUCCESS!     "
 echo.
 echo Instructions: 
 echo Go to your Desktop, in the EZMinerDownloader Folder
@@ -595,7 +533,7 @@ echo.
 echo.
 echo.
 echo.
-call :colorEcho 08  "     DISABLED! "
+call :colorEcho 0C  "     DISABLED! "
 echo.
 echo Will be ENABLED soon!
 echo.
@@ -603,6 +541,14 @@ echo.
 timeout /t 3 /NOBREAK >NUL
 goto MENU
 
+:BACKUP
+xcopy %MINERDIR% %DEST%\BACKUP\ /e /Y
+echo.
+call :colorEcho 0A "      Backup successfully created!       "
+echo.
+echo.
+PAUSE
+goto MENU
 
 :EOF
 exit /B
@@ -612,3 +558,4 @@ echo off
 <nul set /p ".=%DEL%" > "%~2"
 findstr /v /a:%1 /R "^$" "%~2" nul
 del "%~2" > nul 2>&1i
+
