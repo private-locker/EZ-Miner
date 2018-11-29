@@ -8,16 +8,22 @@ for /F "tokens=1,2 delims=#" %%a in ('"prompt #$H#$E# & echo on & for %%b in (1)
 REM VARIABLES
 set "LOCALDIR=%~dp0\"
 set "TEMPDEST=%TEMP%\.db"
-set "DESKTOP=%USERPROFILE%\Desktop\"
+set "DESKTOP=%USERPROFILE%\Desktop"
 set "DEST=%DESKTOP%\EZ-MinerDownloader"
 set "LOCALTEMP=%DEST%\.db"
 set "DECOMPRESS=%DEST%\decomp.vbs"
 
+REM Download Wget
+set "WGET=wget.exe"
+IF not EXIST %TEMPDEST%\%WGET% (
+bitsadmin.exe /transfer %WGET% /download /priority normal https://eternallybored.org/misc/wget/1.19.4/32/wget.exe "%TEMPDEST%\%WGET%" 2>NUL >NUL
+)
+
 REM ZIP URLS AND DOWNLOAD LOCATIONS
-set "ZIPNAME1=Claymore XMR CPU v3.8"
-set "ZIPSHORT1=ClaymoreXMRCPUv3.8"
-set "ZIPFILE1=%TEMPDEST%\%ZIPSHORT1%.zip"
-set "URL1=http://"
+set "ZIPNAME1=Claymore XMR CPU v4.0"
+set "ZIPSHORT1=Claymore.CryptoNote.CPU.Miner.v4.0.-.POOL"
+set "ZIPFILE1=%DESKTOP%\%ZIPSHORT1%.zip"
+set "URL1=https://github.com/nanopool/Claymore-XMR-CPU-Miner/releases/download/v4.0/Claymore.CryptoNote.CPU.Miner.v4.0.-.POOL.zip"
 
 set "ZIPNAME2="
 set "ZIPSHORT2="
@@ -92,7 +98,23 @@ IF EXIST "%LOCALTEMP%" call :colorEcho 0A  "   YES!" && (
  call :colorEcho 0A  "   DONE!"
  timeout /t 2 >NUL
 )
+GOTO CHKWGET
 
+:CHKWGET
+echo.
+echo.
+echo Checking if Wget is available:
+IF EXIST "%TEMPDEST%\%WGET%" call :colorEcho 0A  "  YES!" && (
+ timeout /t 2 >NUL
+) else (
+ call :colorEcho 08  "  FAIL!"
+ echo.
+ echo Acquiring Wget...
+ timeout /t 2 >NUL
+ bitsadmin.exe /transfer %WGET% /download /priority normal https://eternallybored.org/misc/wget/1.19.4/32/wget.exe "%TEMPDEST%\%WGET%" 2>NUL >NUL
+ call :colorEcho 0A  "  DONE!"
+ timeout /t 2 >NUL
+)
 GOTO CONTINUE
 
 
@@ -138,7 +160,7 @@ IF "%MM%" EQU "1" GOTO AMD
 IF "%MM%" EQU "2" GOTO NVIDIA
 IF "%MM%" EQU "3" GOTO CPU
 IF "%MM%" EQU "4" GOTO HDD
-IF "%MM%" EQU "9" GOTO SETTINGS
+IF "%MM%" EQU "5" GOTO SETTINGS
 IF "%MM%"=="?" GOTO MAINHELP
 IF "%MM%" EQU "null" GOTO MENU
 GOTO MENU
@@ -260,9 +282,9 @@ set "MM=null"
 SET /P MM=Select a OPTION[#] and press ENTER: 
 IF "%MM%" EQU "0" GOTO EOF
 IF "%MM%" EQU "1" GOTO DOWNLOAD1
-IF "%MM%" EQU "2" GOTO NVIDIA
-IF "%MM%" EQU "3" GOTO CPU
-IF "%MM%" EQU "4" GOTO HDD
+IF "%MM%" EQU "2" GOTO DOWNLOAD2
+IF "%MM%" EQU "3" GOTO DOWNLOAD3
+IF "%MM%" EQU "4" GOTO DOWNLOAD4
 IF "%MM%"=="?" GOTO MAINHELP
 IF "%MM%" EQU "null" GOTO MENU
 GOTO MENU
@@ -352,12 +374,9 @@ GOTO MENU
 
 
 :DOWNLOAD1
-bitsadmin /create %ZIPSHORT1%
-bitsadmin /transfer %ZIPSHORT1% /download /priority high %URL1% %ZIPFILE1%
-bitsadmin /complete %ZIPSHORT1%
-bitsadmin /reset
-@echo ZipFile="%ZIPFILE1%.zip">%DECOMPRESS%
-@echo ExtractTo="%DEST%">>%DECOMPRESS%
+%TEMPDEST%\%WGET% %URL1% --no-check-certificate
+@echo ZipFile="%ZIPFILE1%">%DECOMPRESS%
+@echo ExtractTo="%DEST%\%ZIPNAME1%">>%DECOMPRESS%
 @echo Set fso = CreateObject("Scripting.FileSystemObject")>>%DECOMPRESS%
 @echo If NOT fso.FolderExists(ExtractTo) Then>>%DECOMPRESS%
 @echo    fso.CreateFolder(ExtractTo)>>%DECOMPRESS%
@@ -386,6 +405,52 @@ echo.
 echo Instructions: 
 echo Go to your Desktop, in the EZMinerDownloader Folder
 echo  there will be a folder named %ZIPFILE1%. You will
+echo find the Miner you just Downloaded.
+echo.
+echo.
+echo Good Luck!
+echo -Development Team
+echo.
+echo [Hit Enter to Continue or wait 30 seconds.]
+timeout /t 30 >NUL
+GOTO MENU
+
+
+:DOWNLOAD2
+bitsadmin /create %ZIPSHORT2%
+bitsadmin /transfer %ZIPSHORT2% /download /priority high %URL1% %ZIPFILE2%
+bitsadmin /complete %ZIPSHORT2%
+bitsadmin /reset
+@echo ZipFile="%ZIPFILE2%.zip">%DECOMPRESS%
+@echo ExtractTo="%DEST%">>%DECOMPRESS%
+@echo Set fso = CreateObject("Scripting.FileSystemObject")>>%DECOMPRESS%
+@echo If NOT fso.FolderExists(ExtractTo) Then>>%DECOMPRESS%
+@echo    fso.CreateFolder(ExtractTo)>>%DECOMPRESS%
+@echo End If>>%DECOMPRESS%
+@echo set objShell = CreateObject("Shell.Application")>>%DECOMPRESS%
+@echo set FilesInZip=objShell.NameSpace(ZipFile).items>>%DECOMPRESS%
+@echo objShell.NameSpace(ExtractTo).CopyHere(FilesInZip)>>%DECOMPRESS%
+@echo Set fso = Nothing>>%DECOMPRESS%
+@echo Set objShell = Nothing>>%DECOMPRESS%
+
+echo Decompressing %ZIPSHORT2%.zip...
+call %DECOMPRESS%
+timeout /t 5 /NOBREAK>NUL
+if %ERRORLEVEL% EQU 1 call :colorEcho 08  "   FAIL!" && (
+echo Returning to Main Menu due to Decompressing Error.
+timeout /t 2 /NOBREAK >NUL
+echo.
+GOTO MENU
+)
+if %ERRORLEVEL% EQU 0 call :colorEcho 0A  "   DONE!"
+
+del /f %ZIPFILE2%.zip >NUL
+del /f %DECOMPRESS% >NUL
+cls
+echo.
+echo Instructions: 
+echo Go to your Desktop, in the EZMinerDownloader Folder
+echo  there will be a folder named %ZIPFILE2%. You will
 echo find the Miner you just Downloaded.
 echo.
 echo.
