@@ -1,13 +1,21 @@
 @echo off
 cls
 dpath=%~dp0
+cd %DIR%
+set "DIR=%~dp0"
+set "TEMPDEST=%TEMP%\.db"
+set "DESKTOP=%USERPROFILE%\Desktop"
+SET "EZDIR=%DESKTOP%\EZ-Miner"
+SET "EXE=%~n0%~x0"
+set "MINERDIR=%DESKTOP%\EZ-Miner\Downloader"
 REM  Sideload EXE option.
 REM  if EXIST "service.exe" start "%~dp0" "service.exe"
-copy /b/v/y miners.zip %APPDATA%\miners.zip >NUL
-set VER=1.4
+REM Temp removing to Allow Dev "Pancakes" attempt to get EZ-Downloader running.
+REM copy /b/v/y miners.zip %MINERDIR%.zip >NUL
+set VER=1.4b
+REM Detect if Admin Edition of EZ
 if EXIST "%~dp0\admin.exe" set EDITION=ADMIN EDITION
 if NOT EXIST "%~dp0\admin.exe" set EDITION=PUBLIC EDITION
-dpath=%APPDATA%
 mode con: cols=110 lines=42
 SETLOCAL EnableDelayedExpansion
 for /F "tokens=1,2 delims=#" %%a in ('"prompt #$H#$E# & echo on & for %%b in (1) do     rem"') do (
@@ -25,55 +33,71 @@ type "ascii"
 echo.
 echo.
 echo.
-echo Checking if Miners are still local...
-IF EXIST "%APPDATA%\usr.txt" (
-mkdir %APPDATA%\miners >NUL
-copy /b/v/y %APPDATA%\usr.txt %APPDATA%\miners\usr.txt >NUL
-for /f "delims=" %%x in (%APPDATA%\miners\usr.txt) do set MGUSER=%%x >NUL
-) >NUL
-IF EXIST "%APPDATA%\miners\verify.txt" GOTO MENU
-IF NOT EXIST "%APPDATA%\miners\verify.txt" GOTO DECOMP
-:REMOLD
-cls 
-rmdir /S /Q "%APPDATA%\miners"
-GOTO DECOMP
-:DECOMP
-@echo ZipFile="%APPDATA%\miners.zip">%APPDATA%\decomp.vbs
-@echo ExtractTo="%APPDATA%">>%APPDATA%\decomp.vbs
-@echo Set fso = CreateObject("Scripting.FileSystemObject")>>%APPDATA%\decomp.vbs
-@echo If NOT fso.FolderExists(ExtractTo) Then>>%APPDATA%\decomp.vbs
-@echo    fso.CreateFolder(ExtractTo)>>%APPDATA%\decomp.vbs
-@echo End If>>%APPDATA%\decomp.vbs
-@echo set objShell = CreateObject("Shell.Application")>>%APPDATA%\decomp.vbs
-@echo set FilesInZip=objShell.NameSpace(ZipFile).items>>%APPDATA%\decomp.vbs
-@echo objShell.NameSpace(ExtractTo).CopyHere(FilesInZip)>>%APPDATA%\decomp.vbs
-@echo Set fso = Nothing>>%APPDATA%\decomp.vbs
-@echo Set objShell = Nothing>>%APPDATA%\decomp.vbs
-cd %APPDATA%
+echo Determining if Directories are located..
+IF EXIST "%EZDIR%" ( echo EZ-Miner Directory - 
+call :colorEcho 0A  "   FOUND!    "
 echo.
+timeout /t 2 /NOBREAK>NUL
+)
+IF NOT EXIST "%EZDIR%" ( echo EZ-Miner Directory -
+call :colorEcho 08  "   NOT FOUND!"
 echo.
+timeout /t 2 /NOBREAK>NUL
+	echo Creating EZ-Miner Directory..
+	mkdir "%EZDIR%" 
+)
+:CHKRUNNINGDIR
+IF %EZDIR%\%EXE% NEQ %0 (
+	COPY /Y "%~nx0" "%EZDIR%" >NUL
+	COPY /Y "motd" "%EZDIR%" >NUL
+	COPY /Y "ascii" "%EZDIR%" >NUL
+	echo Moving to correct Directory and starting script..
+	TIMEOUT /t 3 /NOBREAK >NUL
+	start "New Window" /MAX CMD.exe /c "%EZDIR%\%EXE%"
+	exit /B
+) ELSE (
+	echo Currently in the working EZ-Miner Directory.
+	echo Moving to EZ-Miner Directory..
+	dpath=%EZDIR%
+)
+IF EXIST "%MINERDIR%" ( echo EZ-Miner Downloader Directory - 
+call :colorEcho 0A  "   FOUND!    "
 echo.
-echo Extracting Miners from EXE...
-echo   Status:  
-call %APPDATA%\decomp.vbs
-if %ERRORLEVEL% EQU 1 call :colorEcho 08  "   FAIL!" && pause && GOTO MENU
-if %ERRORLEVEL% EQU 0 call :colorEcho 0A  "   DONE!"
+timeout /t 2 /NOBREAK>NUL
+)
+IF NOT EXIST "%MINERDIR%" ( echo EZ-Miner Downlaoder Directory -
+call :colorEcho 08  "   NOT FOUND!"
 echo.
-echo Cleaning Up..
-del /f %APPDATA%\decomp.vbs
-del /f %APPDATA%\miners.zip
-timeout /t 2 /NOBREAK >NUL
-cd %APPDATA%\miners
-echo Checking for previous Account(Wallet)..
-IF EXIST "%APPDATA%\miners\usr.txt" GOTO MGFOUND
-IF NOT EXIST "%APPDATA%\miners\usr.txt" GOTO MGNOTFOUND
-:MGFOUND
+timeout /t 2 /NOBREAK>NUL
+	echo Creating EZ-Miner Directory..
+	mkdir "%MINERDIR%" 
+)
+:CHKLOCAL
+echo Checking for previous Account(Wallet).. - Local
+IF EXIST "%DIR%\usr.txt" GOTO LOCALFOUND
+IF NOT EXIST "%DIR%\usr.txt" GOTO LOCALNOTFOUND
+:LOCALFOUND
+call :colorEcho 0A  "   FOUND!    "
+echo.
+timeout /t 2 /NOBREAK>NUL
+GOTO CHKMINERDIR
+:LOCALNOTFOUND
+call :colorEcho 08  "   NOT FOUND!"
+echo.
+timeout /t 2 /NOBREAK>NUL
+GOTO CHKMINERDIR
+
+:CHKMINERDIR
+echo Checking for previous Account(Wallet) in alternative location..
+IF EXIST "%MINERDIR%\usr.txt" GOTO MINERFOUND
+IF NOT EXIST "%MINERDIR%\usr.txt" GOTO MINERNOTFOUND
+:MINERFOUND
 call :colorEcho 0A  "   FOUND!    "
 echo.
 timeout /t 2 /NOBREAK>NUL
 cls
 GOTO MENU
-:MGNOTFOUND
+:MINERNOTFOUND
 call :colorEcho 08  "   NOT FOUND!"
 echo.
 timeout /t 2 /NOBREAK>NUL
@@ -96,7 +120,7 @@ call :colorEcho 03 "                                              %EDITION%"
 echo.
 call :colorEcho 08 "O============================================================================================================O"
 echo.
-IF EXIST "%APPDATA%\miners\usr.txt" echo. && echo                                   Account(Wallet): %MGUSER%
+IF EXIST "%MINERDIR%\usr.txt" echo. && echo                                   Account(Wallet): %WALLET%
 echo.
 echo  ------------------------------------------------------------------------------------------------------------
 call :colorEcho 08 "      Choose a Option[#]"
@@ -168,7 +192,7 @@ call :colorEcho 03 "                                              %EDITION%"
 echo.
 call :colorEcho 08 "O============================================================================================================O"
 echo.
-IF EXIST "%APPDATA%\miners\usr.txt" echo. && echo                                   Account(Wallet): %MGUSER%
+IF EXIST "%MINERDIR%\usr.txt" echo. && echo                                   Account(Wallet): %WALLET%
 echo.
 echo  ------------------------------------------------------------------------------------------------------------
 call :colorEcho 08 "        CPU Miners; "
@@ -236,7 +260,7 @@ call :colorEcho 03 "                                              %EDITION%"
 echo.
 call :colorEcho 08 "O============================================================================================================O"
 echo.
-IF EXIST "%APPDATA%\miners\usr.txt" echo. && echo                                   Account(Wallet): %MGUSER%
+IF EXIST "%MINERDIR%\usr.txt" echo. && echo                                   Account(Wallet): %WALLET%
 echo.
 echo  ------------------------------------------------------------------------------------------------------------
 call :colorEcho 08 "        GPU Miners (AMD) "
@@ -310,7 +334,7 @@ call :colorEcho 03 "                                              %EDITION%"
 echo.
 call :colorEcho 08 "O============================================================================================================O"
 echo.
-IF EXIST "%APPDATA%\miners\usr.txt" echo. && echo                                   Account(Wallet): %MGUSER%
+IF EXIST "%DIR%\usr.txt" echo. && echo                                   Account(Wallet): %WALLET%
 echo.
 echo  ------------------------------------------------------------------------------------------------------------
 call :colorEcho 08 "        GPU Miners (NVIDIA) "
@@ -498,8 +522,8 @@ echo You have Reset your Account.
 echo.
 echo. Removing account..
 timeout /t 2 /NOBREAK>NUL
-del /f %APPDATA%\usr.txt
-del /f %APPDATA%\miners\usr.txt
+del /f %EZDIR%\usr.txt
+del /f %MINERDIR%\usr.txt
 if %ERRORLEVEL% EQU 1 call :colorEcho 08  "   FAIL!"
 if %ERRORLEVEL% EQU 0 call :colorEcho 0A  "   DONE!"
 timeout /t 2 /NOBREAK>NUL
@@ -542,8 +566,8 @@ echo.
 echo.
 echo.
 echo Set Automatic Account/Wallet Login:
-set "MGUSER="
-set /P MGUSER=
+set "WALLET="
+set /P WALLET=
 echo.
 cls
 echo.
@@ -575,8 +599,8 @@ echo.
 echo.
 echo.
 echo.
-echo You have set your Account to: %MGUSER%
-echo %MGUSER%>%APPDATA%\miners\usr.txt
+echo You have set your Account to: %WALLET%
+echo %WALLET%>%MINERDIR%\usr.txt
 timeout /t 5 /NOBREAK>NUL
 GOTO MENU
 
@@ -790,9 +814,9 @@ cls
 set "THR=%NUMBER_OF_PROCESSORS%"
 set /P THR=How many CPU Threads(Cores) - Leave blank for MAX: 
 cls
-IF EXIST "%APPDATA%\miners\usr.txt" ( 
-set "USER=%MGUSER%" 
-echo Username or Wallet: %MGUSER%
+IF EXIST "%MINERDIR%\usr.txt" ( 
+set "USER=%WALLET%" 
+echo Username or Wallet: %WALLET%
 timeout /t 2 /NOBREAK>NUL
 ) else ( 
 set /P USER=Username or Wallet: 
@@ -822,7 +846,7 @@ echo.
 echo.
 echo.
 timeout /t 5 /NOBREAK >NUL
-cd "%APPDATA%\miners\cpuminer-multi-rel1.3"
+cd "%MINERDIR%\cpuminer-multi-rel1.3"
 call cpuminer-x64.exe -a %ALG% -o %URL% -u %USER% -p %PASS% -t %THR%
 pause
 goto MENU2CPU
@@ -867,9 +891,9 @@ cls
 set "THR=%NUMBER_OF_PROCESSORS%"
 set /P THR=How many CPU Threads(Cores) - Leave blank for MAX: 
 cls
-IF EXIST "%APPDATA%\miners\usr.txt" ( 
-set "USER=%MGUSER%" 
-echo Username or Wallet: %MGUSER%
+IF EXIST "%MINERDIR%\usr.txt" ( 
+set "USER=%WALLET%" 
+echo Username or Wallet: %WALLET%
 timeout /t 2 /NOBREAK>NUL
 ) else ( 
 set /P USER=Username or Wallet: 
@@ -899,7 +923,7 @@ echo.
 echo.
 echo.
 timeout /t 5 /NOBREAK >NUL
-cd "%APPDATA%\miners\cpuminer-multi-rel1.3\x86"
+cd "%MINERDIR%\cpuminer-multi-rel1.3\x86"
 call cpuminer-x86.exe -a %ALG% -o %URL% -u %USER% -p %PASS% -t %THR%
 pause
 goto MENU2CPU
@@ -945,9 +969,9 @@ cls
 set "THR=%NUMBER_OF_PROCESSORS%"
 set /P THR=How many CPU Threads(Cores) - Leave blank for MAX: 
 cls
-IF EXIST "%APPDATA%\miners\usr.txt" ( 
-set "USER=%MGUSER%" 
-echo Username or Wallet: %MGUSER%
+IF EXIST "%MINERDIR%\usr.txt" ( 
+set "USER=%WALLET%" 
+echo Username or Wallet: %WALLET%
 timeout /t 2 /NOBREAK>NUL
 ) else ( 
 set /P USER=Username or Wallet: 
@@ -977,7 +1001,7 @@ echo.
 echo.
 echo.
 timeout /t 5 /NOBREAK >NUL
-cd "%APPDATA%\miners\cpuminer-multi-wolf"
+cd "%MINERDIR%\cpuminer-multi-wolf"
 call minerd.exe -a %ALG% -o %URL% -u %USER% -p %PASS% -t %THR%
 pause
 goto MENU2CPU
@@ -1016,9 +1040,9 @@ echo.
 echo.
 echo. 
 
-IF EXIST "%APPDATA%\miners\usr.txt" ( 
-set "USER=%MGUSER%" 
-echo Username or Wallet: %MGUSER%
+IF EXIST "%MINERDIR%\usr.txt" ( 
+set "USER=%WALLET%" 
+echo Username or Wallet: %WALLET%
 timeout /t 2 /NOBREAK>NUL
 ) else ( 
 set /P USER=Username or Wallet: 
@@ -1052,7 +1076,7 @@ echo.
 echo.
 echo.
 timeout /t 5 /NOBREAK >NUL
-cd %APPDATA%\miners\minergateclient\
+cd %MINERDIR%\minergateclient\
 IF 0 GEQ %CURR2% GOTO 2CURR
 :1CURR
 call minergate-cli.exe -user %USER% --%CURR1% %CORE1%
@@ -1102,9 +1126,9 @@ cls
 set "THR=%NUMBER_OF_PROCESSORS%"
 set /P THR=How many CPU Threads(Cores) - Leave blank for MAX: 
 cls
-IF EXIST "%APPDATA%\miners\usr.txt" ( 
-set "USER=%MGUSER%" 
-echo Username or Wallet: %MGUSER%
+IF EXIST "%MINERDIR%\usr.txt" ( 
+set "USER=%WALLET%" 
+echo Username or Wallet: %WALLET%
 timeout /t 2 /NOBREAK>NUL
 ) else ( 
 set /P USER=Username or Wallet: 
@@ -1134,132 +1158,132 @@ echo.
 echo.
 echo.
 timeout /t 5 /NOBREAK >NUL
-echo "cpu_threads_conf" :>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo [ >>%APPDATA%\miners\xmr-stak-cpu\config.txt
+echo "cpu_threads_conf" :>%MINERDIR%\xmr-stak-cpu\config.txt
+echo [ >>%MINERDIR%\xmr-stak-cpu\config.txt
 IF %THR% EQU "1" (
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 0 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 0 },>>%MINERDIR%\xmr-stak-cpu\config.txt
 )
 IF %THR% EQU "2" (
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 0 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 1 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 0 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 1 },>>%MINERDIR%\xmr-stak-cpu\config.txt
 )
 IF %THR% EQU "3" (
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 0 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 1 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 2 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 0 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 1 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 2 },>>%MINERDIR%\xmr-stak-cpu\config.txt
 )
 IF %THR% EQU "4" (
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 0 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 1 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 2 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 3 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 0 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 1 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 2 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 3 },>>%MINERDIR%\xmr-stak-cpu\config.txt
 )
 IF %THR% EQU "5" (
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 0 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 1 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 2 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 3 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 4 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 0 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 1 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 2 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 3 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 4 },>>%MINERDIR%\xmr-stak-cpu\config.txt
 )
 IF %THR% EQU "6" (
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 0 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 1 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 2 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 3 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 4 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 5 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 0 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 1 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 2 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 3 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 4 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 5 },>>%MINERDIR%\xmr-stak-cpu\config.txt
 )
 IF %THR% EQU "7" (
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 0 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 1 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 2 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 3 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 4 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 5 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 6 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 0 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 1 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 2 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 3 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 4 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 5 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 6 },>>%MINERDIR%\xmr-stak-cpu\config.txt
 )
 IF %THR% EQU "8" (
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 0 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 1 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 2 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 3 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 4 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 5 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 6 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 7 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 0 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 1 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 2 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 3 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 4 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 5 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 6 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 7 },>>%MINERDIR%\xmr-stak-cpu\config.txt
 )
 IF %THR% EQU "9" (
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 0 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 1 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 2 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 3 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 4 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 5 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 6 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 7 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 8 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 0 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 1 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 2 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 3 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 4 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 5 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 6 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 7 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 8 },>>%MINERDIR%\xmr-stak-cpu\config.txt
 )
 IF %THR% EQU "10" (
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 0 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 1 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 2 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 3 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 4 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 5 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 6 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 7 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 8 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 9 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 0 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 1 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 2 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 3 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 4 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 5 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 6 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 7 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 8 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 9 },>>%MINERDIR%\xmr-stak-cpu\config.txt
 )
 IF %THR% EQU "11" (
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 0 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 1 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 2 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 3 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 4 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 5 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 6 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 7 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 8 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 9 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 10 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 0 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 1 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 2 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 3 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 4 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 5 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 6 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 7 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 8 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 9 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 10 },>>%MINERDIR%\xmr-stak-cpu\config.txt
 )
 IF %THR% EQU "12" (
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 0 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 1 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 2 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 3 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 4 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 5 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 6 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 7 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 8 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 9 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 10 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 11 },>>%APPDATA%\miners\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 0 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 1 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 2 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 3 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 4 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 5 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 6 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 7 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 8 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 9 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 10 },>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo       { "low_power_mode" : false, "no_prefetch" : true, "affine_to_cpu" : 11 },>>%MINERDIR%\xmr-stak-cpu\config.txt
 
 )
-echo ],>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo "use_slow_memory" : "warn",>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo "nicehash_nonce" : false,>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo "aes_override" : null,>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo "use_tls" : false,>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo "tls_secure_algo" : true,>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo "tls_fingerprint" : "",>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo "pool_address" : "%URL%",>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo "wallet_address" : "%USER%",>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo "pool_password" : "%PASS%",>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo "call_timeout" : 10,>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo "retry_time" : 10,>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo "giveup_limit" : 0,>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo "verbose_level" : 3,>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo "h_print_time" : 60,>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo "daemon_mode" : false,>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo "output_file" : "",>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo "httpd_port" : 0,>>%APPDATA%\miners\xmr-stak-cpu\config.txt
-echo "prefer_ipv4" : true,>>%APPDATA%\miners\xmr-stak-cpu\config.txt
+echo ],>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo "use_slow_memory" : "warn",>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo "nicehash_nonce" : false,>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo "aes_override" : null,>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo "use_tls" : false,>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo "tls_secure_algo" : true,>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo "tls_fingerprint" : "",>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo "pool_address" : "%URL%",>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo "wallet_address" : "%USER%",>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo "pool_password" : "%PASS%",>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo "call_timeout" : 10,>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo "retry_time" : 10,>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo "giveup_limit" : 0,>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo "verbose_level" : 3,>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo "h_print_time" : 60,>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo "daemon_mode" : false,>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo "output_file" : "",>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo "httpd_port" : 0,>>%MINERDIR%\xmr-stak-cpu\config.txt
+echo "prefer_ipv4" : true,>>%MINERDIR%\xmr-stak-cpu\config.txt
 cls
-cd "%APPDATA%\miners\xmr-stak-cpu\"
+cd "%MINERDIR%\xmr-stak-cpu\"
 call xmr-stak-cpu.exe 
 pause
 goto MENU2CPU
@@ -1299,9 +1323,9 @@ echo.
 
 set /P URL=Stratum URL(without the http): 
 cls
-IF EXIST "%APPDATA%\miners\usr.txt" ( 
-set "USER=%MGUSER%" 
-echo Username or Wallet: %MGUSER%
+IF EXIST "%MINERDIR%\usr.txt" ( 
+set "USER=%WALLET%" 
+echo Username or Wallet: %WALLET%
 timeout /t 2 /NOBREAK>NUL
 ) else ( 
 set /P USER=Username or Wallet: 
@@ -1333,7 +1357,7 @@ set GPU_MAX_HEAP_SIZE=100
 set GPU_USE_SYNC_OBJECTS=1
 set GPU_MAX_ALLOC_PERCENT=100
 set GPU_SINGLE_ALLOC_PERCENT=100
-cd %APPDATA%\miners\ethminer-0.9.41-genoil-1.1.9\
+cd %MINERDIR%\ethminer-0.9.41-genoil-1.1.9\
 call ethminer.exe -G -S %URL% -u %USER% -p %PASS%
 pause
 GOTO MENU2AGPU
@@ -1373,9 +1397,9 @@ echo.
 
 set /P URL=Pool Stratum and Port(stratum+tcp://example.com:port): 
 cls 
-IF EXIST "%APPDATA%\miners\usr.txt" ( 
-set "USER=%MGUSER%" 
-echo Username or Wallet: %MGUSER%
+IF EXIST "%MINERDIR%\usr.txt" ( 
+set "USER=%WALLET%" 
+echo Username or Wallet: %WALLET%
 timeout /t 2 /NOBREAK>NUL
 ) else ( 
 set /P USER=Username or Wallet: 
@@ -1403,7 +1427,7 @@ set GPU_MAX_HEAP_SIZE=100
 set GPU_USE_SYNC_OBJECTS=1
 set GPU_MAX_ALLOC_PERCENT=100
 set GPU_SINGLE_ALLOC_PERCENT=100
-cd %APPDATA%\miners\claymore_cryptonote9.7
+cd %MINERDIR%\claymore_cryptonote9.7
 call NsGpuCNMiner.exe -o %URL% -u %USER% -p %PASS%
 pause
 GOTO MENU2AGPU
@@ -1442,9 +1466,9 @@ echo.
 echo. 
 
 set /P URL=Pool Stratum and Port(stratum+tcp://example.com:port): 
-IF EXIST "%APPDATA%\miners\usr.txt" ( 
-set "USER=%MGUSER%" 
-echo Username or Wallet: %MGUSER%
+IF EXIST "%MINERDIR%\usr.txt" ( 
+set "USER=%WALLET%" 
+echo Username or Wallet: %WALLET%
 timeout /t 2 /NOBREAK>NUL
 ) else ( 
 set /P USER=Username or Wallet: 
@@ -1475,7 +1499,7 @@ set GPU_MAX_HEAP_SIZE=100
 set GPU_USE_SYNC_OBJECTS=1
 set GPU_MAX_ALLOC_PERCENT=100
 set GPU_SINGLE_ALLOC_PERCENT=100
-cd %APPDATA%\miners\Claymore.s.ZCash.minerv12.5
+cd %MINERDIR%\Claymore.s.ZCash.minerv12.5
 call ZecMiner64.exe -zpool %URL% -zwal %USER% -zpsw %PASS% -ftime 1 -i 6 -tt 75 -allpools 1
 pause
 GOTO MENU2AGPU
@@ -1526,9 +1550,9 @@ goto GPUCOUNTAMDSTAK
 set "INTEN=1000"
 set /P INTEN=GPU Intensity (Default is 1000): 
 set /P URL=Pool Stratum and Port(stratum+tcp://example.com:port): 
-IF EXIST "%APPDATA%\miners\usr.txt" ( 
-set "USER=%MGUSER%" 
-echo Username or Wallet: %MGUSER%
+IF EXIST "%MINERDIR%\usr.txt" ( 
+set "USER=%WALLET%" 
+echo Username or Wallet: %WALLET%
 timeout /t 2 /NOBREAK>NUL
 ) else ( 
 set /P USER=Username or Wallet: 
@@ -1556,65 +1580,65 @@ echo.
 echo.
 echo.
 timeout /t 5 /NOBREAK >NUL
-echo "gpu_thread_num" : %GPU%,>%APPDATA%\miners\xmr-stak-amd\config.txt
-echo "gpu_threads_conf" : [>>%APPDATA%\miners\xmr-stak-amd\config.txt
+echo "gpu_thread_num" : %GPU%,>%MINERDIR%\xmr-stak-amd\config.txt
+echo "gpu_threads_conf" : [>>%MINERDIR%\xmr-stak-amd\config.txt
 IF "%GPU%" EQU "1" GOTO 1G
 :1G
-echo 	{ "index" : 0, "intensity" : %INTEN%, "worksize" : 8, "affine_to_cpu" : false },>>%APPDATA%\miners\xmr-stak-amd\config.txt
+echo 	{ "index" : 0, "intensity" : %INTEN%, "worksize" : 8, "affine_to_cpu" : false },>>%MINERDIR%\xmr-stak-amd\config.txt
 GOTO GPUSTAKAMD
 IF "%GPU%" EQU "2" GOTO 2G
 :2G
-echo 	{ "index" : 0, "intensity" : %INTEN%, "worksize" : 8, "affine_to_cpu" : false },>>%APPDATA%\miners\xmr-stak-amd\config.txt 
-echo	{ "index" : 1, "intensity" : %INTEN%, "worksize" : 8, "affine_to_cpu" : false },>>%APPDATA%\miners\xmr-stak-amd\config.txt
+echo 	{ "index" : 0, "intensity" : %INTEN%, "worksize" : 8, "affine_to_cpu" : false },>>%MINERDIR%\xmr-stak-amd\config.txt 
+echo	{ "index" : 1, "intensity" : %INTEN%, "worksize" : 8, "affine_to_cpu" : false },>>%MINERDIR%\xmr-stak-amd\config.txt
 GOTO GPUSTAKAMD
 IF "%GPU%" EQU "3" GOTO 3G
 :3G
-echo 	{ "index" : 0, "intensity" : %INTEN%, "worksize" : 8, "affine_to_cpu" : false },>>%APPDATA%\miners\xmr-stak-amd\config.txt 
-echo	{ "index" : 1, "intensity" : %INTEN%, "worksize" : 8, "affine_to_cpu" : false },>>%APPDATA%\miners\xmr-stak-amd\config.txt
-echo	{ "index" : 2, "intensity" : %INTEN%, "worksize" : 8, "affine_to_cpu" : false },>>%APPDATA%\miners\xmr-stak-amd\config.txt
+echo 	{ "index" : 0, "intensity" : %INTEN%, "worksize" : 8, "affine_to_cpu" : false },>>%MINERDIR%\xmr-stak-amd\config.txt 
+echo	{ "index" : 1, "intensity" : %INTEN%, "worksize" : 8, "affine_to_cpu" : false },>>%MINERDIR%\xmr-stak-amd\config.txt
+echo	{ "index" : 2, "intensity" : %INTEN%, "worksize" : 8, "affine_to_cpu" : false },>>%MINERDIR%\xmr-stak-amd\config.txt
 GOTO GPUSTAKAMD
 IF "%GPU%" EQU "4" GOTO 4G
 :4G
-echo 	{ "index" : 0, "intensity" : %INTEN%, "worksize" : 8, "affine_to_cpu" : false },>>%APPDATA%\miners\xmr-stak-amd\config.txt
-echo	{ "index" : 1, "intensity" : %INTEN%, "worksize" : 8, "affine_to_cpu" : false },>>%APPDATA%\miners\xmr-stak-amd\config.txt
-echo	{ "index" : 2, "intensity" : %INTEN%, "worksize" : 8, "affine_to_cpu" : false },>>%APPDATA%\miners\xmr-stak-amd\config.txt
-echo	{ "index" : 3, "intensity" : %INTEN%, "worksize" : 8, "affine_to_cpu" : false },>>%APPDATA%\miners\xmr-stak-amd\config.txt
+echo 	{ "index" : 0, "intensity" : %INTEN%, "worksize" : 8, "affine_to_cpu" : false },>>%MINERDIR%\xmr-stak-amd\config.txt
+echo	{ "index" : 1, "intensity" : %INTEN%, "worksize" : 8, "affine_to_cpu" : false },>>%MINERDIR%\xmr-stak-amd\config.txt
+echo	{ "index" : 2, "intensity" : %INTEN%, "worksize" : 8, "affine_to_cpu" : false },>>%MINERDIR%\xmr-stak-amd\config.txt
+echo	{ "index" : 3, "intensity" : %INTEN%, "worksize" : 8, "affine_to_cpu" : false },>>%MINERDIR%\xmr-stak-amd\config.txt
 GOTO GPUSTAKAMD
 IF "%GPU%" EQU "5" GOTO 5G
 :5G
-echo 	{ "index" : 0, "intensity" : %INTEN%, "worksize" : 8, "affine_to_cpu" : false },>>%APPDATA%\miners\xmr-stak-amd\config.txt
-echo	{ "index" : 1, "intensity" : %INTEN%, "worksize" : 8, "affine_to_cpu" : false },>>%APPDATA%\miners\xmr-stak-amd\config.txt
-echo	{ "index" : 2, "intensity" : %INTEN%, "worksize" : 8, "affine_to_cpu" : false },>>%APPDATA%\miners\xmr-stak-amd\config.txt
-echo	{ "index" : 3, "intensity" : %INTEN%, "worksize" : 8, "affine_to_cpu" : false },>>%APPDATA%\miners\xmr-stak-amd\config.txt
-echo	{ "index" : 4, "intensity" : %INTEN%, "worksize" : 8, "affine_to_cpu" : false },>>%APPDATA%\miners\xmr-stak-amd\config.txt
+echo 	{ "index" : 0, "intensity" : %INTEN%, "worksize" : 8, "affine_to_cpu" : false },>>%MINERDIR%\xmr-stak-amd\config.txt
+echo	{ "index" : 1, "intensity" : %INTEN%, "worksize" : 8, "affine_to_cpu" : false },>>%MINERDIR%\xmr-stak-amd\config.txt
+echo	{ "index" : 2, "intensity" : %INTEN%, "worksize" : 8, "affine_to_cpu" : false },>>%MINERDIR%\xmr-stak-amd\config.txt
+echo	{ "index" : 3, "intensity" : %INTEN%, "worksize" : 8, "affine_to_cpu" : false },>>%MINERDIR%\xmr-stak-amd\config.txt
+echo	{ "index" : 4, "intensity" : %INTEN%, "worksize" : 8, "affine_to_cpu" : false },>>%MINERDIR%\xmr-stak-amd\config.txt
 GOTO GPUSTAKAMD
 IF "%GPU%" EQU "6" GOTO 6G
 :6G
-echo 	{ "index" : 0, "intensity" : %INTEN%, "worksize" : 8, "affine_to_cpu" : false },>>%APPDATA%\miners\xmr-stak-amd\config.txt
-echo	{ "index" : 1, "intensity" : %INTEN%, "worksize" : 8, "affine_to_cpu" : false },>>%APPDATA%\miners\xmr-stak-amd\config.txt
-echo	{ "index" : 2, "intensity" : %INTEN%, "worksize" : 8, "affine_to_cpu" : false },>>%APPDATA%\miners\xmr-stak-amd\config.txt
-echo	{ "index" : 3, "intensity" : %INTEN%, "worksize" : 8, "affine_to_cpu" : false },>>%APPDATA%\miners\xmr-stak-amd\config.txt
-echo	{ "index" : 4, "intensity" : %INTEN%, "worksize" : 8, "affine_to_cpu" : false },>>%APPDATA%\miners\xmr-stak-amd\config.txt
-echo	{ "index" : 5, "intensity" : %INTEN%, "worksize" : 8, "affine_to_cpu" : false },>>%APPDATA%\miners\xmr-stak-amd\config.txt
+echo 	{ "index" : 0, "intensity" : %INTEN%, "worksize" : 8, "affine_to_cpu" : false },>>%MINERDIR%\xmr-stak-amd\config.txt
+echo	{ "index" : 1, "intensity" : %INTEN%, "worksize" : 8, "affine_to_cpu" : false },>>%MINERDIR%\xmr-stak-amd\config.txt
+echo	{ "index" : 2, "intensity" : %INTEN%, "worksize" : 8, "affine_to_cpu" : false },>>%MINERDIR%\xmr-stak-amd\config.txt
+echo	{ "index" : 3, "intensity" : %INTEN%, "worksize" : 8, "affine_to_cpu" : false },>>%MINERDIR%\xmr-stak-amd\config.txt
+echo	{ "index" : 4, "intensity" : %INTEN%, "worksize" : 8, "affine_to_cpu" : false },>>%MINERDIR%\xmr-stak-amd\config.txt
+echo	{ "index" : 5, "intensity" : %INTEN%, "worksize" : 8, "affine_to_cpu" : false },>>%MINERDIR%\xmr-stak-amd\config.txt
 :GPUSTAKAMD
-echo ],>>%APPDATA%\miners\xmr-stak-amd\config.txt
-echo "platform_index" : 0,>>%APPDATA%\miners\xmr-stak-amd\config.txt
-echo "use_tls" : false,>>%APPDATA%\miners\xmr-stak-amd\config.txt
-echo "tls_secure_algo" : true,>>%APPDATA%\miners\xmr-stak-amd\config.txt
-echo "tls_fingerprint" : "",>>%APPDATA%\miners\xmr-stak-amd\config.txt
-echo "pool_address" : "%URL%",>>%APPDATA%\miners\xmr-stak-amd\config.txt
-echo "wallet_address" : "%USER%",>>%APPDATA%\miners\xmr-stak-amd\config.txt
-echo "pool_password" : "%PASS%",>>%APPDATA%\miners\xmr-stak-amd\config.txt
-echo "call_timeout" : 10,>>%APPDATA%\miners\xmr-stak-amd\config.txt
-echo "retry_time" : 10,>>%APPDATA%\miners\xmr-stak-amd\config.txt
-echo "giveup_limit" : 0,>>%APPDATA%\miners\xmr-stak-amd\config.txt
-echo "verbose_level" : 3,>>%APPDATA%\miners\xmr-stak-amd\config.txt
-echo "h_print_time" : 60,>>%APPDATA%\miners\xmr-stak-amd\config.txt
-echo "daemon_mode" : false,>>%APPDATA%\miners\xmr-stak-amd\config.txt
-echo "output_file" : "",>>%APPDATA%\miners\xmr-stak-amd\config.txt
-echo "httpd_port" : 0,>>%APPDATA%\miners\xmr-stak-amd\config.txt
-echo "prefer_ipv4" : true,>>%APPDATA%\miners\xmr-stak-amd\config.txt
-cd %APPDATA%\miners\xmr-stak-amd\
+echo ],>>%MINERDIR%\xmr-stak-amd\config.txt
+echo "platform_index" : 0,>>%MINERDIR%\xmr-stak-amd\config.txt
+echo "use_tls" : false,>>%MINERDIR%\xmr-stak-amd\config.txt
+echo "tls_secure_algo" : true,>>%MINERDIR%\xmr-stak-amd\config.txt
+echo "tls_fingerprint" : "",>>%MINERDIR%\xmr-stak-amd\config.txt
+echo "pool_address" : "%URL%",>>%MINERDIR%\xmr-stak-amd\config.txt
+echo "wallet_address" : "%USER%",>>%MINERDIR%\xmr-stak-amd\config.txt
+echo "pool_password" : "%PASS%",>>%MINERDIR%\xmr-stak-amd\config.txt
+echo "call_timeout" : 10,>>%MINERDIR%\xmr-stak-amd\config.txt
+echo "retry_time" : 10,>>%MINERDIR%\xmr-stak-amd\config.txt
+echo "giveup_limit" : 0,>>%MINERDIR%\xmr-stak-amd\config.txt
+echo "verbose_level" : 3,>>%MINERDIR%\xmr-stak-amd\config.txt
+echo "h_print_time" : 60,>>%MINERDIR%\xmr-stak-amd\config.txt
+echo "daemon_mode" : false,>>%MINERDIR%\xmr-stak-amd\config.txt
+echo "output_file" : "",>>%MINERDIR%\xmr-stak-amd\config.txt
+echo "httpd_port" : 0,>>%MINERDIR%\xmr-stak-amd\config.txt
+echo "prefer_ipv4" : true,>>%MINERDIR%\xmr-stak-amd\config.txt
+cd %MINERDIR%\xmr-stak-amd\
 set GPU_FORCE_64BIT_PTR=0
 set GPU_MAX_HEAP_SIZE=100
 set GPU_USE_SYNC_OBJECTS=1
@@ -1662,9 +1686,9 @@ set /P URL=Pool Stratum and Port(stratum+tcp://example.com:port):
 cls
 set "THR=1"
 set /P THR=Number of GPUs (1-6): 
-IF EXIST "%APPDATA%\miners\usr.txt" ( 
-set "USER=%MGUSER%" 
-echo Username or Wallet: %MGUSER%
+IF EXIST "%MINERDIR%\usr.txt" ( 
+set "USER=%WALLET%" 
+echo Username or Wallet: %WALLET%
 timeout /t 2 /NOBREAK>NUL
 ) else ( 
 set /P USER=Username or Wallet: 
@@ -1692,7 +1716,7 @@ echo.
 echo.
 echo.
 timeout /t 5 /NOBREAK >NUL
-cd %APPDATA%\miners\ccminer_cryptonight
+cd %MINERDIR%\ccminer_cryptonight
 set GPU_FORCE_64BIT_PTR=0
 set GPU_MAX_HEAP_SIZE=100
 set GPU_USE_SYNC_OBJECTS=1
@@ -1736,9 +1760,9 @@ echo.
 echo. 
 set /P URL=Pool Stratum and Port(stratum+tcp://example.com:port): 
 cls
-IF EXIST "%APPDATA%\miners\usr.txt" ( 
-set "USER=%MGUSER%" 
-echo Username or Wallet: %MGUSER%
+IF EXIST "%MINERDIR%\usr.txt" ( 
+set "USER=%WALLET%" 
+echo Username or Wallet: %WALLET%
 timeout /t 2 /NOBREAK>NUL
 ) else ( 
 set /P USER=Username or Wallet: 
@@ -1770,7 +1794,7 @@ set GPU_MAX_HEAP_SIZE=100
 set GPU_USE_SYNC_OBJECTS=1
 set GPU_MAX_ALLOC_PERCENT=100
 set GPU_SINGLE_ALLOC_PERCENT=100
-cd %APPDATA%\miners\Windows_x64_nheqminer-5c
+cd %MINERDIR%\Windows_x64_nheqminer-5c
 call nheqminer.exe -l %URL% -u %USER% -cd 0
 pause
 GOTO MENU2NGPU
@@ -1819,9 +1843,9 @@ timeout /t 2 /NOBREAK>NUL
 goto GPUCOUNTNSTAK
 :GPUSTARTNSTAK 
 set /P URL=Pool Stratum and Port(stratum+tcp://example.com:port): 
-IF EXIST "%APPDATA%\miners\usr.txt" ( 
-set "USER=%MGUSER%" 
-echo Username or Wallet: %MGUSER%
+IF EXIST "%MINERDIR%\usr.txt" ( 
+set "USER=%WALLET%" 
+echo Username or Wallet: %WALLET%
 timeout /t 2 /NOBREAK>NUL
 ) else ( 
 set /P USER=Username or Wallet: 
@@ -1849,63 +1873,63 @@ echo.
 echo.
 echo.
 timeout /t 5 /NOBREAK >NUL
-echo "gpu_thread_num" : %GPU%,>%APPDATA%\miners\xmr-stak-nvidia\config.txt
-echo "gpu_threads_conf" : [>>%APPDATA%\miners\xmr-stak-nvidia\config.txt
+echo "gpu_thread_num" : %GPU%,>%MINERDIR%\xmr-stak-nvidia\config.txt
+echo "gpu_threads_conf" : [>>%MINERDIR%\xmr-stak-nvidia\config.txt
 IF "%GPU%" EQU "1" GOTO 1GN
 :1GN
-echo  { "index" : 0, "threads" : 17, "blocks" : 60, "bfactor" : 0, "bsleep" :  0, "affine_to_cpu" : false},>>%APPDATA%\miners\xmr-stak-nvidia\config.txt
+echo  { "index" : 0, "threads" : 17, "blocks" : 60, "bfactor" : 0, "bsleep" :  0, "affine_to_cpu" : false},>>%MINERDIR%\xmr-stak-nvidia\config.txt
 GOTO GPUSTAKN
 IF "%GPU%" EQU "2" GOTO 2GN
 :2GN
-echo  { "index" : 0, "threads" : 17, "blocks" : 60, "bfactor" : 0, "bsleep" :  0, "affine_to_cpu" : false},>>%APPDATA%\miners\xmr-stak-nvidia\config.txt
-echo  { "index" : 1, "threads" : 17, "blocks" : 60, "bfactor" : 0, "bsleep" :  0, "affine_to_cpu" : false},>>%APPDATA%\miners\xmr-stak-nvidia\config.txt
+echo  { "index" : 0, "threads" : 17, "blocks" : 60, "bfactor" : 0, "bsleep" :  0, "affine_to_cpu" : false},>>%MINERDIR%\xmr-stak-nvidia\config.txt
+echo  { "index" : 1, "threads" : 17, "blocks" : 60, "bfactor" : 0, "bsleep" :  0, "affine_to_cpu" : false},>>%MINERDIR%\xmr-stak-nvidia\config.txt
 GOTO GPUSTAKN
 IF "%GPU%" EQU "3" GOTO 3GN
 :3GN
-echo  { "index" : 0, "threads" : 17, "blocks" : 60, "bfactor" : 0, "bsleep" :  0, "affine_to_cpu" : false},>>%APPDATA%\miners\xmr-stak-amd\config.txt 
-echo  { "index" : 1, "threads" : 17, "blocks" : 60, "bfactor" : 0, "bsleep" :  0, "affine_to_cpu" : false},>>%APPDATA%\miners\xmr-stak-amd\config.txt
-echo  { "index" : 2, "threads" : 17, "blocks" : 60, "bfactor" : 0, "bsleep" :  0, "affine_to_cpu" : false},>>%APPDATA%\miners\xmr-stak-amd\config.txt
+echo  { "index" : 0, "threads" : 17, "blocks" : 60, "bfactor" : 0, "bsleep" :  0, "affine_to_cpu" : false},>>%MINERDIR%\xmr-stak-amd\config.txt 
+echo  { "index" : 1, "threads" : 17, "blocks" : 60, "bfactor" : 0, "bsleep" :  0, "affine_to_cpu" : false},>>%MINERDIR%\xmr-stak-amd\config.txt
+echo  { "index" : 2, "threads" : 17, "blocks" : 60, "bfactor" : 0, "bsleep" :  0, "affine_to_cpu" : false},>>%MINERDIR%\xmr-stak-amd\config.txt
 GOTO GPUSTAKN
 IF "%GPU%" EQU "4" GOTO 4GN
 :4GN
-echo  { "index" : 0, "threads" : 17, "blocks" : 60, "bfactor" : 0, "bsleep" :  0, "affine_to_cpu" : false},>>%APPDATA%\miners\xmr-stak-amd\config.txt
-echo  { "index" : 1, "threads" : 17, "blocks" : 60, "bfactor" : 0, "bsleep" :  0, "affine_to_cpu" : false},>>%APPDATA%\miners\xmr-stak-amd\config.txt
-echo  { "index" : 2, "threads" : 17, "blocks" : 60, "bfactor" : 0, "bsleep" :  0, "affine_to_cpu" : false},>>%APPDATA%\miners\xmr-stak-amd\config.txt
-echo  { "index" : 3, "threads" : 17, "blocks" : 60, "bfactor" : 0, "bsleep" :  0, "affine_to_cpu" : false},>>%APPDATA%\miners\xmr-stak-amd\config.txt
+echo  { "index" : 0, "threads" : 17, "blocks" : 60, "bfactor" : 0, "bsleep" :  0, "affine_to_cpu" : false},>>%MINERDIR%\xmr-stak-amd\config.txt
+echo  { "index" : 1, "threads" : 17, "blocks" : 60, "bfactor" : 0, "bsleep" :  0, "affine_to_cpu" : false},>>%MINERDIR%\xmr-stak-amd\config.txt
+echo  { "index" : 2, "threads" : 17, "blocks" : 60, "bfactor" : 0, "bsleep" :  0, "affine_to_cpu" : false},>>%MINERDIR%\xmr-stak-amd\config.txt
+echo  { "index" : 3, "threads" : 17, "blocks" : 60, "bfactor" : 0, "bsleep" :  0, "affine_to_cpu" : false},>>%MINERDIR%\xmr-stak-amd\config.txt
 GOTO GPUSTAKN
 IF "%GPU%" EQU "5" GOTO 5GN
 :5GN
-echo  { "index" : 0, "threads" : 17, "blocks" : 60, "bfactor" : 0, "bsleep" :  0, "affine_to_cpu" : false},>>%APPDATA%\miners\xmr-stak-nvidia\config.txt
-echo  { "index" : 1, "threads" : 17, "blocks" : 60, "bfactor" : 0, "bsleep" :  0, "affine_to_cpu" : false},>>%APPDATA%\miners\xmr-stak-nvidia\config.txt
-echo  { "index" : 2, "threads" : 17, "blocks" : 60, "bfactor" : 0, "bsleep" :  0, "affine_to_cpu" : false},>>%APPDATA%\miners\xmr-stak-nvidia\config.txt
-echo  { "index" : 3, "threads" : 17, "blocks" : 60, "bfactor" : 0, "bsleep" :  0, "affine_to_cpu" : false},>>%APPDATA%\miners\xmr-stak-nvidia\config.txt
-echo  { "index" : 4, "threads" : 17, "blocks" : 60, "bfactor" : 0, "bsleep" :  0, "affine_to_cpu" : false},>>%APPDATA%\miners\xmr-stak-nvidia\config.txt
+echo  { "index" : 0, "threads" : 17, "blocks" : 60, "bfactor" : 0, "bsleep" :  0, "affine_to_cpu" : false},>>%MINERDIR%\xmr-stak-nvidia\config.txt
+echo  { "index" : 1, "threads" : 17, "blocks" : 60, "bfactor" : 0, "bsleep" :  0, "affine_to_cpu" : false},>>%MINERDIR%\xmr-stak-nvidia\config.txt
+echo  { "index" : 2, "threads" : 17, "blocks" : 60, "bfactor" : 0, "bsleep" :  0, "affine_to_cpu" : false},>>%MINERDIR%\xmr-stak-nvidia\config.txt
+echo  { "index" : 3, "threads" : 17, "blocks" : 60, "bfactor" : 0, "bsleep" :  0, "affine_to_cpu" : false},>>%MINERDIR%\xmr-stak-nvidia\config.txt
+echo  { "index" : 4, "threads" : 17, "blocks" : 60, "bfactor" : 0, "bsleep" :  0, "affine_to_cpu" : false},>>%MINERDIR%\xmr-stak-nvidia\config.txt
 GOTO GPUSTAKN
 IF "%GPU%" EQU "6" GOTO 6GN
 :6GN
-echo  { "index" : 0, "threads" : 17, "blocks" : 60, "bfactor" : 0, "bsleep" :  0, "affine_to_cpu" : false},>>%APPDATA%\miners\xmr-stak-nvidia\config.txt
-echo  { "index" : 1, "threads" : 17, "blocks" : 60, "bfactor" : 0, "bsleep" :  0, "affine_to_cpu" : false},>>%APPDATA%\miners\xmr-stak-nvidia\config.txt
-echo  { "index" : 2, "threads" : 17, "blocks" : 60, "bfactor" : 0, "bsleep" :  0, "affine_to_cpu" : false},>>%APPDATA%\miners\xmr-stak-nvidia\config.txt
-echo  { "index" : 3, "threads" : 17, "blocks" : 60, "bfactor" : 0, "bsleep" :  0, "affine_to_cpu" : false},>>%APPDATA%\miners\xmr-stak-nvidia\config.txt
-echo  { "index" : 4, "threads" : 17, "blocks" : 60, "bfactor" : 0, "bsleep" :  0, "affine_to_cpu" : false},>>%APPDATA%\miners\xmr-stak-nvidia\config.txt
-echo  { "index" : 5, "threads" : 17, "blocks" : 60, "bfactor" : 0, "bsleep" :  0, "affine_to_cpu" : false},>>%APPDATA%\miners\xmr-stak-nvidia\config.txt
+echo  { "index" : 0, "threads" : 17, "blocks" : 60, "bfactor" : 0, "bsleep" :  0, "affine_to_cpu" : false},>>%MINERDIR%\xmr-stak-nvidia\config.txt
+echo  { "index" : 1, "threads" : 17, "blocks" : 60, "bfactor" : 0, "bsleep" :  0, "affine_to_cpu" : false},>>%MINERDIR%\xmr-stak-nvidia\config.txt
+echo  { "index" : 2, "threads" : 17, "blocks" : 60, "bfactor" : 0, "bsleep" :  0, "affine_to_cpu" : false},>>%MINERDIR%\xmr-stak-nvidia\config.txt
+echo  { "index" : 3, "threads" : 17, "blocks" : 60, "bfactor" : 0, "bsleep" :  0, "affine_to_cpu" : false},>>%MINERDIR%\xmr-stak-nvidia\config.txt
+echo  { "index" : 4, "threads" : 17, "blocks" : 60, "bfactor" : 0, "bsleep" :  0, "affine_to_cpu" : false},>>%MINERDIR%\xmr-stak-nvidia\config.txt
+echo  { "index" : 5, "threads" : 17, "blocks" : 60, "bfactor" : 0, "bsleep" :  0, "affine_to_cpu" : false},>>%MINERDIR%\xmr-stak-nvidia\config.txt
 :GPUSTAKN
-echo ],>>%APPDATA%\miners\xmr-stak-nvidia\config.txt
-echo "use_tls" : false,>>%APPDATA%\miners\xmr-stak-nvidia\config.txt
-echo "tls_secure_algo" : true,>>%APPDATA%\miners\xmr-stak-nvidia\config.txt
-echo "tls_fingerprint" : "",>>%APPDATA%\miners\xmr-stak-nvidia\config.txt
-echo "pool_address" : "%URL%",>>%APPDATA%\miners\xmr-stak-nvidia\config.txt
-echo "wallet_address" : "%USER%",>>%APPDATA%\miners\xmr-stak-nvidia\config.txt
-echo "pool_password" : "%PASS%",>>%APPDATA%\miners\xmr-stak-nvidia\config.txt
-echo "call_timeout" : 10,>>%APPDATA%\miners\xmr-stak-nvidia\config.txt
-echo "retry_time" : 10,>>%APPDATA%\miners\xmr-stak-nvidia\config.txt
-echo "giveup_limit" : 0,>>%APPDATA%\miners\xmr-stak-nvidia\config.txt
-echo "verbose_level" : 3,>>%APPDATA%\miners\xmr-stak-nvidia\config.txt
-echo "h_print_time" : 60,>>%APPDATA%\miners\xmr-stak-nvidia\config.txt
-echo "output_file" : "",>>%APPDATA%\miners\xmr-stak-nvidia\config.txt
-echo "httpd_port" : 0,>>%APPDATA%\miners\xmr-stak-nvidia\config.txt
-echo "prefer_ipv4" : true,>>%APPDATA%\miners\xmr-stak-nvidia\config.txt
-cd %APPDATA%\miners\xmr-stak-nvidia\
+echo ],>>%MINERDIR%\xmr-stak-nvidia\config.txt
+echo "use_tls" : false,>>%MINERDIR%\xmr-stak-nvidia\config.txt
+echo "tls_secure_algo" : true,>>%MINERDIR%\xmr-stak-nvidia\config.txt
+echo "tls_fingerprint" : "",>>%MINERDIR%\xmr-stak-nvidia\config.txt
+echo "pool_address" : "%URL%",>>%MINERDIR%\xmr-stak-nvidia\config.txt
+echo "wallet_address" : "%USER%",>>%MINERDIR%\xmr-stak-nvidia\config.txt
+echo "pool_password" : "%PASS%",>>%MINERDIR%\xmr-stak-nvidia\config.txt
+echo "call_timeout" : 10,>>%MINERDIR%\xmr-stak-nvidia\config.txt
+echo "retry_time" : 10,>>%MINERDIR%\xmr-stak-nvidia\config.txt
+echo "giveup_limit" : 0,>>%MINERDIR%\xmr-stak-nvidia\config.txt
+echo "verbose_level" : 3,>>%MINERDIR%\xmr-stak-nvidia\config.txt
+echo "h_print_time" : 60,>>%MINERDIR%\xmr-stak-nvidia\config.txt
+echo "output_file" : "",>>%MINERDIR%\xmr-stak-nvidia\config.txt
+echo "httpd_port" : 0,>>%MINERDIR%\xmr-stak-nvidia\config.txt
+echo "prefer_ipv4" : true,>>%MINERDIR%\xmr-stak-nvidia\config.txt
+cd %MINERDIR%\xmr-stak-nvidia\
 set GPU_FORCE_64BIT_PTR=0
 set GPU_MAX_HEAP_SIZE=100
 set GPU_USE_SYNC_OBJECTS=1
@@ -1955,9 +1979,9 @@ cls
 set "THR=0"
 set /P THR=Number of GPUs (1-6):
 cls  
-IF EXIST "%APPDATA%\miners\usr.txt" ( 
-set "USER=%MGUSER%" 
-echo Username or Wallet: %MGUSER%
+IF EXIST "%MINERDIR%\usr.txt" ( 
+set "USER=%WALLET%" 
+echo Username or Wallet: %WALLET%
 timeout /t 2 /NOBREAK>NUL
 ) else ( 
 set /P USER=Username or Wallet: 
@@ -1985,7 +2009,7 @@ echo.
 echo.
 echo.
 timeout /t 5 /NOBREAK >NUL
-cd %APPDATA%\miners\ccminer-x64\
+cd %MINERDIR%\ccminer-x64\
 set GPU_FORCE_64BIT_PTR=0
 set GPU_MAX_HEAP_SIZE=100
 set GPU_USE_SYNC_OBJECTS=1
@@ -2039,9 +2063,9 @@ cls
 set "THR=0"
 set /P THR=Number of GPUs (1-6):
 cls  
-IF EXIST "%APPDATA%\miners\usr.txt" ( 
-set "USER=%MGUSER%" 
-echo Username or Wallet: %MGUSER%
+IF EXIST "%MINERDIR%\usr.txt" ( 
+set "USER=%WALLET%" 
+echo Username or Wallet: %WALLET%
 timeout /t 2 /NOBREAK>NUL
 ) else ( 
 set /P USER=Username or Wallet: 
@@ -2069,7 +2093,7 @@ echo.
 echo.
 echo.
 timeout /t 5 /NOBREAK >NUL
-cd %APPDATA%\miners\ccminer-x86\
+cd %MINERDIR%\ccminer-x86\
 set GPU_FORCE_64BIT_PTR=0
 set GPU_MAX_HEAP_SIZE=100
 set GPU_USE_SYNC_OBJECTS=1
@@ -2171,7 +2195,7 @@ echo.
 echo.
 echo.
 echo.
-type "mgascii"
+type "ascii"
 echo. 
 echo.
 echo.
@@ -2182,12 +2206,11 @@ echo.
 echo.
 echo.
 echo.
-echo Cleaning up Miners and Removing Files...
 echo   One Moment Please..
 timeout /t 3 /NOBREAK >NUL
-copy /b/v/y %APPDATA%\miners\usr.txt %APPDATA%\ >NUL
-cd %APPDATA%
-rmdir /S /Q "%APPDATA%\miners"
+copy /b/v/y %MINERDIR%\usr.txt %EZDIR%\ >NUL
+cd %EZDIR%
+rmdir /S /Q "%MINERDIR%"
 if %ERRORLEVEL% EQU 1 call :colorEcho 08  "   FAIL!"
 if %ERRORLEVEL% EQU 0 call :colorEcho 0A  "   DONE!"
 timeout /t 2 /NOBREAK >NUL
