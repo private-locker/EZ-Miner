@@ -9,7 +9,7 @@ REM VARIABLES
 set "LOCALDIR=%~dp0\"
 set "TEMPDEST=%TEMP%\.db"
 set "DESKTOP=%USERPROFILE%\Desktop"
-set "DEST=%DESKTOP%\EZ-Miner\Downloader"
+set "DEST=%DESKTOP%\EZ-MinerDownloader"
 set "LOCALTEMP=%DEST%\.db"
 set "DECOMPRESS=%DEST%\decomp.vbs"
 
@@ -475,6 +475,9 @@ echo [Hit Enter to Continue or wait 30 seconds.]
 timeout /t 30 >NUL
 GOTO MENU
 
+REM !!!!!!!!!!!!!!!!!!!!!!!!!!
+REM NEEDS TO BE FIXED
+REM !!!!!!!!!!!!!!!!!!!!!!!!!!
 :DOWNLOAD3
 %TEMPDEST%\%WGET% %URL3% --no-check-certificate
 @echo ZipFile="%ZIPFILE3%">%DECOMPRESS%
@@ -500,7 +503,7 @@ GOTO MENU
 )
 if %ERRORLEVEL% EQU 0 call :colorEcho 0A  "   DONE!"
 
-del /f %ZIPFILE3% >NUL
+del /f %ZIPFILE3%.zip >NUL
 del /f %DECOMPRESS% >NUL
 cls
 echo.
@@ -516,10 +519,6 @@ echo.
 echo [Hit Enter to Continue or wait 30 seconds.]
 timeout /t 30 >NUL
 GOTO MENU
-
-REM !!!!!!!!!!!!!!
-REM NEEDS TO BE FIXED
-REM !!!!!!!!!!!!!!
 
 :DOWNLOAD4
 %TEMPDEST%\%WGET% %URL4% --no-check-certificate
@@ -563,47 +562,6 @@ echo [Hit Enter to Continue or wait 30 seconds.]
 timeout /t 30 >NUL
 GOTO MENU
 
-:DOWNLOAD5
-%TEMPDEST%\%WGET% %URL5% --no-check-certificate
-@echo ZipFile="%ZIPFILE5%">%DECOMPRESS%
-@echo ExtractTo="%DEST%\%ZIPNAME5%">>%DECOMPRESS%
-@echo Set fso = CreateObject("Scripting.FileSystemObject")>>%DECOMPRESS%
-@echo If NOT fso.FolderExists(ExtractTo) Then>>%DECOMPRESS%
-@echo    fso.CreateFolder(ExtractTo)>>%DECOMPRESS%
-@echo End If>>%DECOMPRESS%
-@echo set objShell = CreateObject("Shell.Application")>>%DECOMPRESS%
-@echo set FilesInZip=objShell.NameSpace(ZipFile).items>>%DECOMPRESS%
-@echo objShell.NameSpace(ExtractTo).CopyHere(FilesInZip)>>%DECOMPRESS%
-@echo Set fso = Nothing>>%DECOMPRESS%
-@echo Set objShell = Nothing>>%DECOMPRESS%
-
-echo Decompressing %ZIPSHORT5%.zip...
-call %DECOMPRESS%
-timeout /t 5 /NOBREAK>NUL
-if %ERRORLEVEL% EQU 1 call :colorEcho 08  "   FAIL!" && (
-echo Returning to Main Menu due to Decompressing Error.
-timeout /t 2 /NOBREAK >NUL
-echo.
-GOTO MENU
-)
-if %ERRORLEVEL% EQU 0 call :colorEcho 0A  "   DONE!"
-
-del /f %ZIPFILE5% >NUL
-del /f %DECOMPRESS% >NUL
-cls
-echo.
-echo Instructions: 
-echo Go to your Desktop, in the EZMinerDownloader Folder
-echo there will be a folder named %ZIPNAME5%. You will
-echo find the Miner you just Downloaded.
-echo.
-echo.
-echo Good Luck!
-echo -Development Team
-echo.
-echo [Hit Enter to Continue or wait 30 seconds.]
-timeout /t 30 >NUL
-GOTO MENU
 
 :DISABLED1
 cls
