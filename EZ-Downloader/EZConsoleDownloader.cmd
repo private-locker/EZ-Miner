@@ -74,13 +74,14 @@ IF EXIST "%DEST%" call :colorEcho 0A  "   YES!" && (
  echo.
  echo Making Directory...
  timeout /t 2 >NUL
- mkdir %DEST%
+ mkdir "%DEST%"
  call :colorEcho 0A  "   DONE!"
  timeout /t 2 >NUL
 )
 IF NOT EXIST "%MINERDIR%" mkdir "%MINERDIR%"
 GOTO CHKWGET
 
+REM check if Wget is still available
 :CHKWGET
 echo.
 echo.
@@ -97,7 +98,6 @@ IF EXIST "%MINERDIR%\%WGET%" call :colorEcho 0A  "   YES!" && (
  timeout /t 2 >NUL
 )
 GOTO MENU
-
 
 :MENU
 title EZ-Miner Downloader v0.1b
@@ -117,11 +117,20 @@ echo  O=================================================O
 echo           EZ-Miner Console Miner Downloader         
 echo  O=================================================O
 echo.  
-echo    1. AMD Console Miners
-echo    2. Nvidia Console Miners
-echo    3. CPU Console Miners
-echo    4. HDD Console Miner (Experienced Miners ONLY)
-echo    5. Settings
+call :colorEcho 0D "   1." 
+echo  - AMD Console Miners
+echo.
+call :colorEcho 0D "   2." 
+echo  - Nvidia Console Miners
+echo.
+call :colorEcho 0D "   3." 
+echo  - CPU Console Miners
+echo.
+call :colorEcho 0D "   4." 
+echo  - HDD Console Miner (Experienced Miners ONLY)
+echo.
+call :colorEcho 0D "   5."
+echo  - Settings
 echo.    
 echo  ---------------------------------------------------
 echo  Press ? for help, or Press # corresponding to Menu.
@@ -156,10 +165,16 @@ echo  O=================================================O
 echo           EZ-Miner Console Miner Downloader         
 echo  O=================================================O
 echo.  
-echo    1. %ZIPNAME2%
-echo    2. %ZIPNAME3%
-echo    3. 
-echo    4. 
+call :colorEcho 04 "   1."
+echo - %ZIPNAME2%
+echo.
+call :colorEcho 04 "   2."
+echo - %ZIPNAME3%
+echo.
+call :colorEcho 04 "   3."
+echo. 
+echo.
+call :colorEcho 04 "   4." 
 echo.    
 echo  ---------------------------------------------------
 echo  Press ? for help, or Press # corresponding to Menu.
@@ -193,10 +208,17 @@ echo  O=================================================O
 echo           EZ-Miner Console Miner Downloader         
 echo  O=================================================O
 echo.  
-echo    1. %ZIPNAME2%
-echo    2. %ZIPNAME4%
-echo    3. CPU Console Miners
-echo    4. HDD Console Miner (Experienced Miners ONLY)
+call :colorEcho 02 "   1." 
+echo  - %ZIPNAME2%
+echo.
+call :colorEcho 02 "   2." 
+echo  - %ZIPNAME4%
+echo.
+call :colorEcho 02 "   3." 
+echo  - CPU Console Miners
+echo.
+call :colorEcho 02 "   4."
+echo  - HDD Console Miner (Experienced Miners ONLY)
 echo.    
 echo  ---------------------------------------------------
 echo  Press ? for help, or Press # corresponding to Menu.
@@ -231,9 +253,13 @@ echo  O=================================================O
 echo           EZ-Miner Console Miner Downloader         
 echo  O=================================================O
 echo.  
-echo    1. %ZIPSHORT1%
-echo    2.
-echo    3. 
+call :colorEcho 09 "   1." 
+echo  - %ZIPSHORT1%
+echo.
+call :colorEcho 09 "   2."
+echo.
+echo.
+call :colorEcho 09 "   3." 
 echo.
 echo.
 echo.    
@@ -305,10 +331,17 @@ echo  O=================================================O
 echo           EZ-Miner Console Miner Downloader         
 echo  O=================================================O
 echo.  
-echo    1. Clean Up Download Directories
-echo    2. Remove Wget
-echo    3. Remove Local Miners
-echo    4. Backup Downloaded Miners
+call :colorEcho 0E "   1." 
+echo  - Clean Up Download Directories
+echo.
+call :colorEcho 0E "   2." 
+echo  - Remove Wget
+echo.
+call :colorEcho 0E "   3." 
+echo  - Remove Local Miners
+echo.
+call :colorEcho 0E "   4." 
+echo  - Backup Downloaded Miners
 echo.    
 echo  ---------------------------------------------------
 echo  Press ? for help, or Press # corresponding to Menu.
@@ -326,21 +359,21 @@ GOTO MENU
 
 
 :DOWNLOAD1
-%MINERDIR%\%WGET% %URL1% --no-check-certificate 
-@echo ZipFile="%ZIPFILE1%">%DECOMPRESS%
-@echo ExtractTo="%MINERDIR%\%ZIPNAME1%">>%DECOMPRESS%
-@echo Set fso = CreateObject("Scripting.FileSystemObject")>>%DECOMPRESS%
-@echo If NOT fso.FolderExists(ExtractTo) Then>>%DECOMPRESS%
-@echo    fso.CreateFolder(ExtractTo)>>%DECOMPRESS%
-@echo End If>>%DECOMPRESS%
-@echo set objShell = CreateObject("Shell.Application")>>%DECOMPRESS%
-@echo set FilesInZip=objShell.NameSpace(ZipFile).items>>%DECOMPRESS%
-@echo objShell.NameSpace(ExtractTo).CopyHere(FilesInZip)>>%DECOMPRESS%
-@echo Set fso = Nothing>>%DECOMPRESS%
-@echo Set objShell = Nothing>>%DECOMPRESS%
+"%MINERDIR%\%WGET%" %URL1% --no-check-certificate 
+@echo ZipFile="%ZIPFILE1%">"%DECOMPRESS%"
+@echo ExtractTo="%MINERDIR%\%ZIPNAME1%">>"%DECOMPRESS%"
+@echo Set fso = CreateObject("Scripting.FileSystemObject")>>"%DECOMPRESS%"
+@echo If NOT fso.FolderExists(ExtractTo) Then>>"%DECOMPRESS%"
+@echo    fso.CreateFolder(ExtractTo)>>"%DECOMPRESS%"
+@echo End If>>"%DECOMPRESS%"
+@echo set objShell = CreateObject("Shell.Application")>>"%DECOMPRESS%"
+@echo set FilesInZip=objShell.NameSpace(ZipFile).items>>"%DECOMPRESS%"
+@echo objShell.NameSpace(ExtractTo).CopyHere(FilesInZip)>>"%DECOMPRESS%"
+@echo Set fso = Nothing>>"%DECOMPRESS%"
+@echo Set objShell = Nothing>>"%DECOMPRESS%"
 
 echo Decompressing %ZIPSHORT1%.zip...
-call %DECOMPRESS%
+call "%DECOMPRESS%"
 timeout /t 5 /NOBREAK>NUL
 if %ERRORLEVEL% EQU 1 call :colorEcho 0C  "   FAIL!" && (
 echo Returning to Main Menu due to Decompressing Error.
@@ -350,8 +383,8 @@ GOTO MENU
 )
 if %ERRORLEVEL% EQU 0 call :colorEcho 0A  "   DONE!"
 
-del /f %ZIPFILE1% >NUL
-del /f %DECOMPRESS% >NUL
+del /f "%ZIPFILE1%" >NUL
+del /f "%DECOMPRESS%" >NUL
 cls
 echo.
 call :colorEcho 0A "               SUCCESS!     "
@@ -370,21 +403,21 @@ timeout /t 30 >NUL
 GOTO MENU
 
 :DOWNLOAD2
-%MINERDIR%\%WGET% %URL2% --no-check-certificate 
-@echo ZipFile="%ZIPFILE2%">%DECOMPRESS%
-@echo ExtractTo="%MINERDIR%\%ZIPNAME2%">>%DECOMPRESS%
-@echo Set fso = CreateObject("Scripting.FileSystemObject")>>%DECOMPRESS%
-@echo If NOT fso.FolderExists(ExtractTo) Then>>%DECOMPRESS%
-@echo    fso.CreateFolder(ExtractTo)>>%DECOMPRESS%
-@echo End If>>%DECOMPRESS%
-@echo set objShell = CreateObject("Shell.Application")>>%DECOMPRESS%
-@echo set FilesInZip=objShell.NameSpace(ZipFile).items>>%DECOMPRESS%
-@echo objShell.NameSpace(ExtractTo).CopyHere(FilesInZip)>>%DECOMPRESS%
-@echo Set fso = Nothing>>%DECOMPRESS%
-@echo Set objShell = Nothing>>%DECOMPRESS%
+"%MINERDIR%\%WGET%" %URL2% --no-check-certificate 
+@echo ZipFile="%ZIPFILE2%">"%DECOMPRESS%"
+@echo ExtractTo="%MINERDIR%\%ZIPNAME2%">>"%DECOMPRESS%"
+@echo Set fso = CreateObject("Scripting.FileSystemObject")>>"%DECOMPRESS%"
+@echo If NOT fso.FolderExists(ExtractTo) Then>>"%DECOMPRESS%"
+@echo    fso.CreateFolder(ExtractTo)>>"%DECOMPRESS%"
+@echo End If>>"%DECOMPRESS%"
+@echo set objShell = CreateObject("Shell.Application")>>"%DECOMPRESS%"
+@echo set FilesInZip=objShell.NameSpace(ZipFile).items>>"%DECOMPRESS%"
+@echo objShell.NameSpace(ExtractTo).CopyHere(FilesInZip)>>"%DECOMPRESS%"
+@echo Set fso = Nothing>>"%DECOMPRESS%"
+@echo Set objShell = Nothing>>"%DECOMPRESS%"
 
 echo Decompressing %ZIPSHORT2%.zip...
-call %DECOMPRESS%
+call "%DECOMPRESS%"
 timeout /t 5 /NOBREAK>NUL
 if %ERRORLEVEL% EQU 1 call :colorEcho 0C  "   FAIL!" && (
 echo Returning to Main Menu due to Decompressing Error.
@@ -394,8 +427,8 @@ GOTO MENU
 )
 if %ERRORLEVEL% EQU 0 call :colorEcho 0A  "   DONE!"
 
-del /f %ZIPFILE2% >NUL
-del /f %DECOMPRESS% >NUL
+del /f "%ZIPFILE2%" >NUL
+del /f "%DECOMPRESS%" >NUL
 cls
 echo.
 call :colorEcho 0A "               SUCCESS!     "
@@ -414,21 +447,21 @@ timeout /t 30 >NUL
 GOTO MENU
 
 :DOWNLOAD3
-%MINERDIR%\%WGET% %URL3% --no-check-certificate 
-@echo ZipFile="%ZIPFILE3%">%DECOMPRESS%
-@echo ExtractTo="%MINERDIR%\%ZIPNAME3%">>%DECOMPRESS%
-@echo Set fso = CreateObject("Scripting.FileSystemObject")>>%DECOMPRESS%
-@echo If NOT fso.FolderExists(ExtractTo) Then>>%DECOMPRESS%
-@echo    fso.CreateFolder(ExtractTo)>>%DECOMPRESS%
-@echo End If>>%DECOMPRESS%
-@echo set objShell = CreateObject("Shell.Application")>>%DECOMPRESS%
-@echo set FilesInZip=objShell.NameSpace(ZipFile).items>>%DECOMPRESS%
-@echo objShell.NameSpace(ExtractTo).CopyHere(FilesInZip)>>%DECOMPRESS%
-@echo Set fso = Nothing>>%DECOMPRESS%
-@echo Set objShell = Nothing>>%DECOMPRESS%
+"%MINERDIR%\%WGET%" %URL3% --no-check-certificate 
+@echo ZipFile="%ZIPFILE3%">"%DECOMPRESS%"
+@echo ExtractTo="%MINERDIR%\%ZIPNAME3%">>"%DECOMPRESS%"
+@echo Set fso = CreateObject("Scripting.FileSystemObject")>>"%DECOMPRESS%"
+@echo If NOT fso.FolderExists(ExtractTo) Then>>"%DECOMPRESS%"
+@echo    fso.CreateFolder(ExtractTo)>>"%DECOMPRESS%"
+@echo End If>>"%DECOMPRESS%"
+@echo set objShell = CreateObject("Shell.Application")>>"%DECOMPRESS%"
+@echo set FilesInZip=objShell.NameSpace(ZipFile).items>>"%DECOMPRESS%"
+@echo objShell.NameSpace(ExtractTo).CopyHere(FilesInZip)>>"%DECOMPRESS%"
+@echo Set fso = Nothing>>"%DECOMPRESS%"
+@echo Set objShell = Nothing>>"%DECOMPRESS%"
 
 echo Decompressing %ZIPSHORT3%.zip...
-call %DECOMPRESS%
+call "%DECOMPRESS%"
 timeout /t 5 /NOBREAK>NUL
 if %ERRORLEVEL% EQU 1 call :colorEcho 0C  "   FAIL!" && (
 echo Returning to Main Menu due to Decompressing Error.
@@ -438,8 +471,8 @@ GOTO MENU
 )
 if %ERRORLEVEL% EQU 0 call :colorEcho 0A  "   DONE!"
 
-del /f %ZIPFILE3% >NUL
-del /f %DECOMPRESS% >NUL
+del /f "%ZIPFILE3%" >NUL
+del /f "%DECOMPRESS%" >NUL
 cls
 echo.
 call :colorEcho 0A "               SUCCESS!     "
@@ -458,21 +491,21 @@ timeout /t 30 >NUL
 GOTO MENU
 
 :DOWNLOAD4
-%MINERDIR%\%WGET% %URL4% --no-check-certificate 
-@echo ZipFile="%ZIPFILE4%">%DECOMPRESS%
-@echo ExtractTo="%MINERDIR%\%ZIPNAME4%">>%DECOMPRESS%
-@echo Set fso = CreateObject("Scripting.FileSystemObject")>>%DECOMPRESS%
-@echo If NOT fso.FolderExists(ExtractTo) Then>>%DECOMPRESS%
-@echo    fso.CreateFolder(ExtractTo)>>%DECOMPRESS%
-@echo End If>>%DECOMPRESS%
-@echo set objShell = CreateObject("Shell.Application")>>%DECOMPRESS%
-@echo set FilesInZip=objShell.NameSpace(ZipFile).items>>%DECOMPRESS%
-@echo objShell.NameSpace(ExtractTo).CopyHere(FilesInZip)>>%DECOMPRESS%
-@echo Set fso = Nothing>>%DECOMPRESS%
-@echo Set objShell = Nothing>>%DECOMPRESS%
+"%MINERDIR%\%WGET%" %URL4% --no-check-certificate 
+@echo ZipFile="%ZIPFILE4%">"%DECOMPRESS%"
+@echo ExtractTo="%MINERDIR%\%ZIPNAME4%">>"%DECOMPRESS%"
+@echo Set fso = CreateObject("Scripting.FileSystemObject")>>"%DECOMPRESS%"
+@echo If NOT fso.FolderExists(ExtractTo) Then>>"%DECOMPRESS%"
+@echo    fso.CreateFolder(ExtractTo)>>"%DECOMPRESS%"
+@echo End If>>"%DECOMPRESS%"
+@echo set objShell = CreateObject("Shell.Application")>>"%DECOMPRESS%"
+@echo set FilesInZip=objShell.NameSpace(ZipFile).items>>"%DECOMPRESS%"
+@echo objShell.NameSpace(ExtractTo).CopyHere(FilesInZip)>>"%DECOMPRESS%"
+@echo Set fso = Nothing>>"%DECOMPRESS%"
+@echo Set objShell = Nothing>>"%DECOMPRESS%"
 
 echo Decompressing %ZIPSHORT4%.zip...
-call %DECOMPRESS%
+call "%DECOMPRESS%"
 timeout /t 5 /NOBREAK>NUL
 if %ERRORLEVEL% EQU 1 call :colorEcho 0C  "   FAIL!" && (
 echo Returning to Main Menu due to Decompressing Error.
@@ -482,8 +515,8 @@ GOTO MENU
 )
 if %ERRORLEVEL% EQU 0 call :colorEcho 0A  "   DONE!"
 
-del /f %ZIPFILE4% >NUL
-del /f %DECOMPRESS% >NUL
+del /f "%ZIPFILE4%" >NUL
+del /f "%DECOMPRESS%" >NUL
 cls
 echo.
 call :colorEcho 0A "               SUCCESS!     "
@@ -545,21 +578,21 @@ timeout /t 3 /NOBREAK >NUL
 goto MENU
 
 :BACKUP
-@echo Set WshShell = WScript.CreateObject("WScript.Shell")>%compress%
-@echo Set fso = CreateObject("Scripting.FileSystemObject")>>%compress%
-@echo Set objShell = CreateObject("Shell.Application")>>%compress%
-@echo Set objArgs = WScript.Arguments>>%compress%
-@echo Set zip = fso.CreateTextFile(objArgs(1))>>%compress%
-@echo zip.Write Chr(80) ^& Chr(75) ^& Chr(5) ^& Chr(6) ^& String(18, 0)>>%compress%
-@echo zip.Close>>%compress%
-@echo WScript.Sleep 500>>%compress%
-@echo Set target = objShell.NameSpace(objArgs(1))>>%compress%
-@echo Set src = objShell.NameSpace(objArgs(0)).Items>>%compress%
-@echo target.CopyHere src>>%compress%
-@echo WScript.Sleep 10000>>%compress%
+@echo Set WshShell = WScript.CreateObject("WScript.Shell")>"%compress%"
+@echo Set fso = CreateObject("Scripting.FileSystemObject")>>"%compress%"
+@echo Set objShell = CreateObject("Shell.Application")>>"%compress%"
+@echo Set objArgs = WScript.Arguments>>"%compress%"
+@echo Set zip = fso.CreateTextFile(objArgs(1))>>"%compress%"
+@echo zip.Write Chr(80) ^& Chr(75) ^& Chr(5) ^& Chr(6) ^& String(18, 0)>>"%compress%"
+@echo zip.Close>>"%compress%"
+@echo WScript.Sleep 500>>"%compress%"
+@echo Set target = objShell.NameSpace(objArgs(1))>>"%compress%"
+@echo Set src = objShell.NameSpace(objArgs(0)).Items>>"%compress%"
+@echo target.CopyHere src>>"%compress%"
+@echo WScript.Sleep 10000>>"%compress%"
 IF EXIST "%backup%" del /f "%backup%" >NUL
 timeout /t 1 /NOBREAK >NUL
-cscript %compress% "%MINERDIR%" "%backup%" 2>NUL >NUL
+cscript "%compress%" "%MINERDIR%" "%backup%" 2>NUL >NUL
 timeout /t 5 /NOBREAK>NUL
 if %ERRORLEVEL% EQU 1 call :colorEcho 0C  "   FAIL!" && (
 echo Returning to Main Menu due to Compressing Error.
@@ -585,7 +618,6 @@ if %size% LSS %maxbytesize% (
     call :colorEcho 0A "  Backup successfully created! 
 	echo.
 )
-REM xcopy %MINERDIR% %DEST%\BACKUP\ /e /Y      "
 echo.
 echo Cleaning Up Temp files...
 del /f "%backup%~*" 2>NUL >NUL
@@ -606,8 +638,8 @@ set "RM=null"
 set /p RM=(Y)es/(N)o:  
 IF "%RM%" EQU "Y" goto WGETDELETE
 IF "%RM%" EQU "y" goto WGETDELETE
-IF "%RM%" EQU "N" GOTO MENU else (
-rem IF "%RM%" EQU "n" GOTO MENU else (
+IF "%RM%" EQU "N" GOTO MENU 
+IF "%RM%" EQU "n" GOTO MENU else (
 goto DELWGET )
 goto MENU
 
@@ -629,7 +661,7 @@ goto MENU
 
 :CLEANLOCAL
 cls
-echo Are you sure you wish to remove all miners from %MINERDIR%?
+echo Are you sure you wish to remove all miners from "%MINERDIR%"?
 echo.
 set "RM=null"
 set /p RM=(Y)es/(N)o: 
