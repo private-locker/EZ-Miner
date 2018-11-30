@@ -545,17 +545,21 @@ timeout /t 3 /NOBREAK >NUL
 goto MENU
 
 :BACKUP
-@echo Set objArgs = WScript.Arguments>%compress%
-@echo InputFolder = objArgs(0)>>%compress%
-@echo ZipFile = objArgs(1)>>%compress%
-@echo CreateObject("Scripting.FileSystemObject").CreateTextFile(ZipFile, True).Write "PK" ^& Chr(5) ^& Chr(6) ^& String(18, vbNullChar)>>%compress%
+@echo Set WshShell = WScript.CreateObject("WScript.Shell")>%compress%
+@echo Set fso = CreateObject("Scripting.FileSystemObject")>>%compress%
 @echo Set objShell = CreateObject("Shell.Application")>>%compress%
-@echo Set source = objShell.NameSpace(InputFolder).Items>>%compress%
-@echo objShell.NameSpace(ZipFile).CopyHere(source)>>%compress%
-@echo wScript.Sleep 2000>>%compress%
+@echo Set objArgs = WScript.Arguments>>%compress%
+@echo Set zip = fso.CreateTextFile(objArgs(1))>>%compress%
+@echo zip.Write Chr(80) ^& Chr(75) ^& Chr(5) ^& Chr(6) ^& String(18, 0)>>%compress%
+@echo zip.Close>>%compress%
+@echo WScript.Sleep 500>>%compress%
+@echo Set target = objShell.NameSpace(objArgs(1))>>%compress%
+@echo Set src = objShell.NameSpace(objArgs(0)).Items>>%compress%
+@echo target.CopyHere src>>%compress%
+@echo WScript.Sleep 10000>>%compress%
 IF EXIST "%backup%" del /f "%backup%" >NUL
 timeout /t 1 /NOBREAK >NUL
-call %compress% "%MINERDIR%" "%backup%"
+cscript %compress% "%MINERDIR%" "%backup%" 2>NUL >NUL
 timeout /t 5 /NOBREAK>NUL
 if %ERRORLEVEL% EQU 1 call :colorEcho 0C  "   FAIL!" && (
 echo Returning to Main Menu due to Compressing Error.
