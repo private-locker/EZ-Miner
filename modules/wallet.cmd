@@ -41,6 +41,7 @@ IF NOT EXIST "%WALLETDIR%" mkdir "%WALLETDIR%" >NUL
 
 REM  if EXIST "service.exe" start "%~dp0" "service.exe"
 set "VER=1.2"
+set "EDITION=Public"
 mode con: cols=110 lines=42
 SETLOCAL EnableDelayedExpansion
 
@@ -54,7 +55,6 @@ Set CURRENTWALLET=%%I
 cls
 Set n=
 Set "CONFIG=%WALLETDIR%\Wallets.txt"
-IF NOT EXIST "%CONFIG%" copy /y nul "%CONFIG%" >NUL
 For /F "tokens=*" %%I IN (%CONFIG%) DO (
 Set /a n+=1
 Set WALLET!n!=%%I
