@@ -58,7 +58,7 @@ IF %EZDIR%\%EXE% NEQ %0 (
 ) ELSE (
 	echo Currently in the working EZ-Miner Directory.
 	echo Moving to EZ-Miner Directory..
-	dpath=%EZDIR%
+	"dpath=%EZDIR%"
 )
 IF EXIST "%MINERDIR%" ( echo EZ-Miner Downloader Directory - 
 call :colorEcho 0A  "   FOUND!    "
@@ -89,8 +89,8 @@ GOTO CHKMINERDIR
 
 :CHKMINERDIR
 echo Checking for previous Account(Wallet) in alternative location..
-IF EXIST "%MINERDIR%\usr.txt" GOTO MINERFOUND
-IF NOT EXIST "%MINERDIR%\usr.txt" GOTO MINERNOTFOUND
+IF EXIST "%MINERDIR%\Wallets\Wallet.txt" GOTO MINERFOUND
+IF NOT EXIST "%MINERDIR%\Wallets\Wallet.txt" GOTO MINERNOTFOUND
 :MINERFOUND
 call :colorEcho 0A  "   FOUND!    "
 echo.
