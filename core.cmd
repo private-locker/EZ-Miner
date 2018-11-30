@@ -2208,12 +2208,12 @@ echo.
 echo.
 echo   One Moment Please..
 timeout /t 3 /NOBREAK >NUL
-copy /b/v/y %MINERDIR%\usr.txt %EZDIR%\ >NUL
-cd %EZDIR%
-rmdir /S /Q "%MINERDIR%"
-if %ERRORLEVEL% EQU 1 call :colorEcho 08  "   FAIL!"
-if %ERRORLEVEL% EQU 0 call :colorEcho 0A  "   DONE!"
-timeout /t 2 /NOBREAK >NUL
+REM copy /b/v/y %MINERDIR%\usr.txt %EZDIR%\ >NUL
+REM cd %EZDIR%
+REM rmdir /S /Q "%MINERDIR%"
+REM if %ERRORLEVEL% EQU 1 call :colorEcho 08  "   FAIL!"
+REM if %ERRORLEVEL% EQU 0 call :colorEcho 0A  "   DONE!"
+REM timeout /t 2 /NOBREAK >NUL
 GOTO EOF
 
 :EOF
