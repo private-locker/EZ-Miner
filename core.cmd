@@ -52,6 +52,9 @@ timeout /t 2 /NOBREAK>NUL
 IF %EZDIR%\%EXE% NEQ %0 (
 	COPY /Y "%~nx0" "%EZDIR%" >NUL
 	COPY /Y "motd" "%EZDIR%" >NUL
+	IF NOT EXIST "%EZDIR%\modules" mkdir "%EZDIR%\modules" >NUL
+	COPY /Y "%DIR%\modules\downloader.cmd" "%EZDIR%\modules\downloader.cmd" >NUL
+	COPY /Y "%DIR%\modules\wallet.cmd" "%EZDIR%\modules\wallet.cmd" >NUL
 	COPY /Y "ascii" "%EZDIR%" >NUL
 	echo Moving to correct Directory and starting script..
 	TIMEOUT /t 3 /NOBREAK >NUL
@@ -76,13 +79,13 @@ timeout /t 2 /NOBREAK>NUL
 )
 :CHKLOCAL
 echo Checking for previous Account(Wallet).. - Local
-IF EXIST "%DIR%\usr.txt" GOTO LOCALFOUND
-IF NOT EXIST "%DIR%\usr.txt" GOTO LOCALNOTFOUND
+IF EXIST "%EZDIR%\Wallets\Wallet.txt" GOTO LOCALFOUND
+IF NOT EXIST "%EZDIR%\Wallets\Wallet.txt" GOTO LOCALNOTFOUND
 :LOCALFOUND
 call :colorEcho 0A  "   FOUND!    "
 echo.
 timeout /t 2 /NOBREAK>NUL
-GOTO CHKMINERDIR
+GOTO MENU
 :LOCALNOTFOUND
 call :colorEcho 08  "   NOT FOUND!"
 echo.
@@ -152,13 +155,13 @@ echo.
 IF EXIST "%WALLETMANAGER%" (
 call :colorEcho 0E "     9 "
 call :colorEcho 07 " - Wallet Manager "
-call :colorEcho 0B "(Module Located)"
+call :colorEcho 0B " (Module Located)"
 echo.
 )
 IF EXIST "%DOWNLOADER%" (
 call :colorEcho 0E "    10 "
 call :colorEcho 07 " - Downloader "
-call :colorEcho 0B "(Module Located)"
+call :colorEcho 0B " (Module Located)"
 echo.
 )
 call :colorEcho 0E "     0 "
