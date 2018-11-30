@@ -6,6 +6,8 @@ set "DIR=%~dp0"
 set "TEMPDEST=%TEMP%\.db"
 set "DESKTOP=%USERPROFILE%\Desktop"
 SET "EZDIR=%DESKTOP%\EZ-Miner"
+SET "WALLETMANAGER=%EZDIR%\modules\wallet.cmd"
+SET "DOWNLOADER=%EZDIR%\modules\downloader.cmd"
 SET "EXE=%~n0%~x0"
 set "MINERDIR=%DESKTOP%\EZ-Miner\Downloader"
 REM  Sideload EXE option.
@@ -147,10 +149,18 @@ call :colorEcho 0E "     8 "
 call :colorEcho 07 " - Credits "
 call :colorEcho 0F " (Disclaimer)"
 echo.
+IF EXIST "%WALLETMANAGER%" (
 call :colorEcho 0E "     9 "
-call :colorEcho 07 " - ADMIN PANEL "
-call :colorEcho 0B " (Donators ONLY)"
+call :colorEcho 07 " - Wallet Manager "
+call :colorEcho 0B "(Module Located)"
 echo.
+)
+IF EXIST "%DOWNLOADER%" (
+call :colorEcho 0E "    10 "
+call :colorEcho 07 " - Downloader "
+call :colorEcho 0B "(Module Located)"
+echo.
+)
 call :colorEcho 0E "     0 "
 call :colorEcho 07 " - Exit"
 echo.
@@ -174,7 +184,12 @@ IF "%MM%" EQU "5" GOTO RESETACCOUNT
 IF "%MM%" EQU "6" GOTO DISABLED1
 IF "%MM%" EQU "7" GOTO DISABLED1
 IF "%MM%" EQU "8" GOTO DEV
-IF "%MM%" EQU "9" GOTO ADMIN
+IF EXIST "%WALLETMANAGER%" (
+IF "%MM%" EQU "9" CALL "%WALLETMANAGER%"
+)
+IF EXIST "%DOWNLOADER%" (
+IF "%MM%" EQU "10" CALL "%DOWNLOADER%"
+)
 IF "%MM%"=="?" GOTO MAINHELP
 IF "%MM%" EQU "0" GOTO EXIT
 IF "%MM%" EQU "null" GOTO MENU
