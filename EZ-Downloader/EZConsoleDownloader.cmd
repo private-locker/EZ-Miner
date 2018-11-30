@@ -12,7 +12,7 @@ set "DESKTOP=%USERPROFILE%\Desktop"
 set "DEST=%DESKTOP%\EZ-Miner"
 set "DECOMPRESS=%DEST%\decomp.vbs"
 set "MINERDIR=%DESKTOP%\EZ-Miner\Downloader"
-set "backup=%DEST%\backup.zip"
+set "backup=%DEST%\backup_%time:~0,2%%time:~3,2%%time:~6,2%_%date:~-10,2%%date:~-7,2%%date:~-4,4%.zip"
 set "compress=%DEST%\compress.vbs"
 set "WGET=wget.exe"
 
