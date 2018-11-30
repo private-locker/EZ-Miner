@@ -1,4 +1,5 @@
 @echo off
+title EZ-Miner Downloader v0.1b
 mode con: cols=70 lines=25
 SETLOCAL EnableDelayedExpansion
 for /F "tokens=1,2 delims=#" %%a in ('"prompt #$H#$E# & echo on & for %%b in (1) do     rem"') do (
@@ -11,12 +12,9 @@ set "DESKTOP=%USERPROFILE%\Desktop"
 set "DEST=%DESKTOP%\EZ-Miner"
 set "DECOMPRESS=%DEST%\decomp.vbs"
 set "MINERDIR=%DESKTOP%\EZ-Miner\Downloader"
-
-REM Download Wget
+set "backup=%DEST%\backup.zip"
+set "compress=%DEST%\compress.vbs"
 set "WGET=wget.exe"
-IF not EXIST %MINERDIR%\%WGET% (
-bitsadmin.exe /transfer %WGET% /download /priority normal https://eternallybored.org/misc/wget/1.19.4/32/wget.exe "%MINERDIR%\%WGET%" 2>NUL >NUL
-)
 
 REM ZIP URLS AND DOWNLOAD LOCATIONS
 set "ZIPNAME1=Claymore XMR CPU v4.0"
@@ -80,6 +78,7 @@ IF EXIST "%DEST%" call :colorEcho 0A  "   YES!" && (
  call :colorEcho 0A  "   DONE!"
  timeout /t 2 >NUL
 )
+IF NOT EXIST "%MINERDIR%" mkdir "%MINERDIR%"
 GOTO CHKWGET
 
 :CHKWGET
@@ -94,13 +93,14 @@ IF EXIST "%MINERDIR%\%WGET%" call :colorEcho 0A  "   YES!" && (
  echo Acquiring Wget...
  timeout /t 2 >NUL
  bitsadmin.exe /transfer %WGET% /download /priority normal https://eternallybored.org/misc/wget/1.19.4/32/wget.exe "%MINERDIR%\%WGET%" 2>NUL >NUL
- call :colorEcho 0A  "  DONE!"
+ call :colorEcho 0A  "   DONE!"
  timeout /t 2 >NUL
 )
 GOTO MENU
 
 
 :MENU
+title EZ-Miner Downloader v0.1b
 cls
 echo.
 echo.
@@ -140,6 +140,7 @@ GOTO MENU
 
 :AMD
 cls
+title EZ-Miner Downloader - AMD v0.1b
 echo.
 echo.
 echo.
@@ -175,6 +176,7 @@ IF "%MM%" EQU "null" GOTO MENU
 GOTO MENU
 
 :NVIDIA
+title EZ-Miner Downloader - NVidia v0.1b
 cls
 echo.
 echo.
@@ -212,6 +214,7 @@ GOTO MENU
 
 
 :CPU
+title EZ-Miner Downloader - CPU v0.1b
 cls
 echo.
 echo.
@@ -303,7 +306,7 @@ echo           EZ-Miner Console Miner Downloader
 echo  O=================================================O
 echo.  
 echo    1. Clean Up Download Directories
-echo    2. Clear TEMP Download Directory
+echo    2. Remove Wget
 echo    3. Remove Local Miners
 echo    4. Backup Downloaded Miners
 echo.    
@@ -314,7 +317,7 @@ set "MM=null"
 SET /P MM=Select a OPTION[#] and press ENTER: 
 IF "%MM%" EQU "0" GOTO SETTINGS
 IF "%MM%" EQU "1" GOTO CLEANDOWNLOAD
-IF "%MM%" EQU "2" GOTO CLEANTEMP
+IF "%MM%" EQU "2" GOTO DELWGET
 IF "%MM%" EQU "3" GOTO CLEANLOCAL
 IF "%MM%" EQU "4" GOTO BACKUP
 IF "%MM%"=="?" GOTO MAINHELP
@@ -542,6 +545,15 @@ timeout /t 3 /NOBREAK >NUL
 goto MENU
 
 :BACKUP
+rem @echo Set objArgs = WScript.Arguments>%compress%
+rem @echo InputFolder = objArgs(0)>>%compress%
+rem @echo ZipFile = objArgs(1)>>%compress%
+rem @echo CreateObject("Scripting.FileSystemObject").CreateTextFile(ZipFile, True).Write "PK" & Chr(5) & Chr(6) & String(18, vbNullChar)>>%compress%
+rem @echo Set objShell = CreateObject("Shell.Application")>>%compress%
+rem @echo Set source = objShell.NameSpace(InputFolder).Items>>%compress%
+rem @echo objShell.NameSpace(ZipFile).CopyHere(source)>>%compress%
+rem @echo wScript.Sleep 2000>>%compress%
+rem call %compress% %MINERDIR% %backup%
 xcopy %MINERDIR% %DEST%\BACKUP\ /e /Y
 echo.
 call :colorEcho 0A "      Backup successfully created!       "
@@ -549,6 +561,65 @@ echo.
 echo.
 PAUSE
 goto MENU
+
+:DELWGET
+cls
+echo.
+echo.
+echo.
+echo Are you sure you wish to remove Wget?
+echo Wget will be redownloaded next time you execute this script
+echo.
+set "RM=null"
+set /p RM=(Y)es/(N)o:  
+IF "%RM%" EQU "Y" goto WGETDELETE
+IF "%RM%" EQU "y" goto WGETDELETE
+IF "%RM%" EQU "N" GOTO MENU else (
+rem IF "%RM%" EQU "n" GOTO MENU else (
+goto DELWGET )
+goto MENU
+
+:WGETDELETE
+cls
+echo Wget is being removed from your system...
+del "%MINERDIR%\%WGET%"
+echo.
+IF EXIST "%MINERDIR%\%WGET%" call :colorEcho 0C "%WGET% was unable to be removed from your system, please ensure it is not running in the background"
+timeout /t 3 /NOBREAK >NUL
+IF NOT EXIST "%MINERDIR%\%WGET%" call :colorEcho 0A "          %WGET% successfully deleted"
+echo.
+echo.
+call :colorEcho 0C "   Please note that wget will be reacquired upon next execution"
+echo.
+echo.
+PAUSE
+goto MENU
+
+:CLEANLOCAL
+cls
+echo Are you sure you wish to remove all miners from %MINERDIR%?
+echo.
+set "RM=null"
+set /p RM=(Y)es/(N)o: 
+IF "%RM%" EQU "Y" goto DELMINERS
+IF "%RM%" EQU "y" goto DELMINERS
+IF "%RM%" EQU "N" goto MENU
+IF "%RM%" EQU "n" goto MENU else (
+goto CLEANLOCAL ) 
+goto MENU
+
+:DELMINERS
+cls
+echo Miners are being removed from your system...
+rmdir "%MINERDIR%" /S /Q
+echo.
+IF EXIST "%MINERDIR%" call :colorEcho 0C "Some miners were unable to be removed, please ensure none are running."
+IF NOT EXIST "%MINERDIR%" call :colorEcho 0A "     Miners have been successfully removed from your system"
+echo.
+echo.
+PAUSE
+goto MENU
+
 
 :EOF
 exit /B
