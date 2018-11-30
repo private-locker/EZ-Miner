@@ -554,25 +554,38 @@ goto MENU
 @echo objShell.NameSpace(ZipFile).CopyHere(source)>>%compress%
 @echo wScript.Sleep 2000>>%compress%
 IF EXIST "%backup%" del /f "%backup%" >NUL
+timeout /t 1 /NOBREAK >NUL
 call %compress% "%MINERDIR%" "%backup%"
 timeout /t 5 /NOBREAK>NUL
 if %ERRORLEVEL% EQU 1 call :colorEcho 0C  "   FAIL!" && (
 echo Returning to Main Menu due to Compressing Error.
-del /f "%compress%"
-del /f "%backup%"
-del /f "%backup%~*"
+del /f "%compress%" >NUL
+del /f "%backup%" >NUL
+del /f "%backup%~*" >NUL
 timeout /t 2 /NOBREAK >NUL
 echo.
 GOTO MENU
 )
 if %ERRORLEVEL% EQU 0 call :colorEcho 0A  "   DONE!"
-REM xcopy %MINERDIR% %DEST%\BACKUP\ /e /Y
 echo.
-call :colorEcho 0A "      Backup successfully created!       "
+echo Checking File Integrity...
+echo.
+set maxbytesize=1000
+FOR /F "usebackq" %%A IN ('%backup%') DO set size=%%~zA
+if %size% LSS %maxbytesize% (
+    del /f "%backup%">NUL
+	del /f "%compress%">NUL
+	echo Backup Failed... Trying again..	
+	GOTO BACKUP
+) ELSE (
+    call :colorEcho 0A "  Backup successfully created! 
+	echo.
+)
+REM xcopy %MINERDIR% %DEST%\BACKUP\ /e /Y      "
 echo.
 echo Cleaning Up Temp files...
-del /f "%backup%~*"
-del /f "%compress%"
+del /f "%backup%~*" 2>NUL >NUL
+del /f "%compress%" >NUL 
 echo.
 PAUSE
 goto MENU
