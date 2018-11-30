@@ -228,7 +228,7 @@ echo.
 echo.
 set "WALADD=null"
 SET /P WALADD=Enter a Wallet Address: 
-echo %WALADD% >>"%CONFIG%"
+echo %WALADD%>>"%CONFIG%"
 timeout /t 1 /NOBREAK>NUL
 GOTO MENU
 
