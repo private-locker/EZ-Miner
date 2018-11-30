@@ -182,8 +182,14 @@ echo.
 set "MM=null"
 SET /P MM=Select a OPTION[#] and press ENTER: 
 IF "%MM%" EQU "0" GOTO MENU
-IF "%MM%" EQU "1" GOTO DOWNLOAD2
-IF "%MM%" EQU "2" GOTO DOWNLOAD3
+IF "%MM%" EQU "1" ( set MURL=%URL2%
+set MZIP=%ZIPFILE2%
+set MNAME=%ZIPNAME2%
+GOTO DOWNTEST )
+IF "%MM%" EQU "2" ( set MURL=%URL3%
+set MZIP=%ZIPFILE3%
+set MNAME=%ZIPNAME3%
+GOTO DOWNTEST )
 IF "%MM%" EQU "3" GOTO CPU
 IF "%MM%" EQU "4" GOTO HDD
 IF "%MM%"=="?" GOTO MAINHELP
@@ -226,8 +232,14 @@ echo.
 set "MM=null"
 SET /P MM=Select a OPTION[#] and press ENTER: 
 IF "%MM%" EQU "0" GOTO MENU
-IF "%MM%" EQU "1" GOTO DOWNLOAD2
-IF "%MM%" EQU "2" GOTO DOWNLOAD4
+IF "%MM%" EQU "1" ( set MURL=%URL2%
+set MZIP=%ZIPFILE2%
+set MNAME=%ZIPNAME2%
+GOTO DOWNTEST )
+IF "%MM%" EQU "2" ( set MURL=%URL4%
+set MZIP=%ZIPFILE4%
+set MNAME=%ZIPNAME4%
+GOTO DOWNTEST )
 IF "%MM%" EQU "3" GOTO CPU
 IF "%MM%" EQU "4" GOTO HDD
 IF "%MM%"=="?" GOTO MAINHELP
@@ -269,7 +281,10 @@ echo.
 set "MM=null"
 SET /P MM=Select a OPTION[#] and press ENTER: 
 IF "%MM%" EQU "0" GOTO MENU
-IF "%MM%" EQU "1" GOTO DOWNLOAD1
+IF "%MM%" EQU "1" ( set MURL=%URL1%
+set MZIP=%ZIPFILE1%
+set MNAME=%ZIPNAME1%
+GOTO DOWNTEST )
 IF "%MM%" EQU "2" GOTO DOWNLOAD2
 IF "%MM%" EQU "3" GOTO DOWNLOAD3
 IF "%MM%" EQU "4" GOTO DOWNLOAD4
@@ -358,10 +373,10 @@ IF "%MM%" EQU "null" GOTO MENU
 GOTO MENU
 
 
-:DOWNLOAD1
-"%MINERDIR%\%WGET%" %URL1% --no-check-certificate 
-@echo ZipFile="%ZIPFILE1%">"%DECOMPRESS%"
-@echo ExtractTo="%MINERDIR%\%ZIPNAME1%">>"%DECOMPRESS%"
+:DOWNTEST
+"%MINERDIR%\%WGET%" %MURL% --no-check-certificate 
+@echo ZipFile="%MZIP%">"%DECOMPRESS%"
+@echo ExtractTo="%MINERDIR%\%MNAME%">>"%DECOMPRESS%"
 @echo Set fso = CreateObject("Scripting.FileSystemObject")>>"%DECOMPRESS%"
 @echo If NOT fso.FolderExists(ExtractTo) Then>>"%DECOMPRESS%"
 @echo    fso.CreateFolder(ExtractTo)>>"%DECOMPRESS%"
@@ -372,7 +387,7 @@ GOTO MENU
 @echo Set fso = Nothing>>"%DECOMPRESS%"
 @echo Set objShell = Nothing>>"%DECOMPRESS%"
 
-echo Decompressing %ZIPSHORT1%.zip...
+echo Decompressing %MNAME%.zip...
 call "%DECOMPRESS%"
 timeout /t 5 /NOBREAK>NUL
 if %ERRORLEVEL% EQU 1 call :colorEcho 0C  "   FAIL!" && (
@@ -383,7 +398,7 @@ GOTO MENU
 )
 if %ERRORLEVEL% EQU 0 call :colorEcho 0A  "   DONE!"
 
-del /f "%ZIPFILE1%" >NUL
+del /f "%MZIP%" >NUL
 del /f "%DECOMPRESS%" >NUL
 cls
 echo.
@@ -391,139 +406,7 @@ call :colorEcho 0A "               SUCCESS!     "
 echo.
 echo Instructions: 
 echo Go to your Desktop, in the EZMinerDownloader Folder
-echo  there will be a folder named %ZIPNAME1%. You will
-echo find the Miner you just Downloaded.
-echo.
-echo.
-echo Good Luck!
-echo -Development Team
-echo.
-echo [Hit Enter to Continue or wait 30 seconds.]
-timeout /t 30 >NUL
-GOTO MENU
-
-:DOWNLOAD2
-"%MINERDIR%\%WGET%" %URL2% --no-check-certificate 
-@echo ZipFile="%ZIPFILE2%">"%DECOMPRESS%"
-@echo ExtractTo="%MINERDIR%\%ZIPNAME2%">>"%DECOMPRESS%"
-@echo Set fso = CreateObject("Scripting.FileSystemObject")>>"%DECOMPRESS%"
-@echo If NOT fso.FolderExists(ExtractTo) Then>>"%DECOMPRESS%"
-@echo    fso.CreateFolder(ExtractTo)>>"%DECOMPRESS%"
-@echo End If>>"%DECOMPRESS%"
-@echo set objShell = CreateObject("Shell.Application")>>"%DECOMPRESS%"
-@echo set FilesInZip=objShell.NameSpace(ZipFile).items>>"%DECOMPRESS%"
-@echo objShell.NameSpace(ExtractTo).CopyHere(FilesInZip)>>"%DECOMPRESS%"
-@echo Set fso = Nothing>>"%DECOMPRESS%"
-@echo Set objShell = Nothing>>"%DECOMPRESS%"
-
-echo Decompressing %ZIPSHORT2%.zip...
-call "%DECOMPRESS%"
-timeout /t 5 /NOBREAK>NUL
-if %ERRORLEVEL% EQU 1 call :colorEcho 0C  "   FAIL!" && (
-echo Returning to Main Menu due to Decompressing Error.
-timeout /t 2 /NOBREAK >NUL
-echo.
-GOTO MENU
-)
-if %ERRORLEVEL% EQU 0 call :colorEcho 0A  "   DONE!"
-
-del /f "%ZIPFILE2%" >NUL
-del /f "%DECOMPRESS%" >NUL
-cls
-echo.
-call :colorEcho 0A "               SUCCESS!     "
-echo.
-echo Instructions: 
-echo Go to your Desktop, in the EZMinerDownloader Folder
-echo there will be a folder named %ZIPNAME2%. You will
-echo find the Miner you just Downloaded.
-echo.
-echo.
-echo Good Luck!
-echo -Development Team
-echo.
-echo [Hit Enter to Continue or wait 30 seconds.]
-timeout /t 30 >NUL
-GOTO MENU
-
-:DOWNLOAD3
-"%MINERDIR%\%WGET%" %URL3% --no-check-certificate 
-@echo ZipFile="%ZIPFILE3%">"%DECOMPRESS%"
-@echo ExtractTo="%MINERDIR%\%ZIPNAME3%">>"%DECOMPRESS%"
-@echo Set fso = CreateObject("Scripting.FileSystemObject")>>"%DECOMPRESS%"
-@echo If NOT fso.FolderExists(ExtractTo) Then>>"%DECOMPRESS%"
-@echo    fso.CreateFolder(ExtractTo)>>"%DECOMPRESS%"
-@echo End If>>"%DECOMPRESS%"
-@echo set objShell = CreateObject("Shell.Application")>>"%DECOMPRESS%"
-@echo set FilesInZip=objShell.NameSpace(ZipFile).items>>"%DECOMPRESS%"
-@echo objShell.NameSpace(ExtractTo).CopyHere(FilesInZip)>>"%DECOMPRESS%"
-@echo Set fso = Nothing>>"%DECOMPRESS%"
-@echo Set objShell = Nothing>>"%DECOMPRESS%"
-
-echo Decompressing %ZIPSHORT3%.zip...
-call "%DECOMPRESS%"
-timeout /t 5 /NOBREAK>NUL
-if %ERRORLEVEL% EQU 1 call :colorEcho 0C  "   FAIL!" && (
-echo Returning to Main Menu due to Decompressing Error.
-timeout /t 2 /NOBREAK >NUL
-echo.
-GOTO MENU
-)
-if %ERRORLEVEL% EQU 0 call :colorEcho 0A  "   DONE!"
-
-del /f "%ZIPFILE3%" >NUL
-del /f "%DECOMPRESS%" >NUL
-cls
-echo.
-call :colorEcho 0A "               SUCCESS!     "
-echo.
-echo Instructions: 
-echo Go to your Desktop, in the EZMinerDownloader Folder
-echo there will be a folder named %ZIPNAME3%. You will
-echo find the Miner you just Downloaded.
-echo.
-echo.
-echo Good Luck!
-echo -Development Team
-echo.
-echo [Hit Enter to Continue or wait 30 seconds.]
-timeout /t 30 >NUL
-GOTO MENU
-
-:DOWNLOAD4
-"%MINERDIR%\%WGET%" %URL4% --no-check-certificate 
-@echo ZipFile="%ZIPFILE4%">"%DECOMPRESS%"
-@echo ExtractTo="%MINERDIR%\%ZIPNAME4%">>"%DECOMPRESS%"
-@echo Set fso = CreateObject("Scripting.FileSystemObject")>>"%DECOMPRESS%"
-@echo If NOT fso.FolderExists(ExtractTo) Then>>"%DECOMPRESS%"
-@echo    fso.CreateFolder(ExtractTo)>>"%DECOMPRESS%"
-@echo End If>>"%DECOMPRESS%"
-@echo set objShell = CreateObject("Shell.Application")>>"%DECOMPRESS%"
-@echo set FilesInZip=objShell.NameSpace(ZipFile).items>>"%DECOMPRESS%"
-@echo objShell.NameSpace(ExtractTo).CopyHere(FilesInZip)>>"%DECOMPRESS%"
-@echo Set fso = Nothing>>"%DECOMPRESS%"
-@echo Set objShell = Nothing>>"%DECOMPRESS%"
-
-echo Decompressing %ZIPSHORT4%.zip...
-call "%DECOMPRESS%"
-timeout /t 5 /NOBREAK>NUL
-if %ERRORLEVEL% EQU 1 call :colorEcho 0C  "   FAIL!" && (
-echo Returning to Main Menu due to Decompressing Error.
-timeout /t 2 /NOBREAK >NUL
-echo.
-GOTO MENU
-)
-if %ERRORLEVEL% EQU 0 call :colorEcho 0A  "   DONE!"
-
-del /f "%ZIPFILE4%" >NUL
-del /f "%DECOMPRESS%" >NUL
-cls
-echo.
-call :colorEcho 0A "               SUCCESS!     "
-echo.
-echo Instructions: 
-echo Go to your Desktop, in the EZMinerDownloader Folder
-echo there will be a folder named %ZIPNAME2%. You will
+echo  there will be a folder named %MNAME%. You will
 echo find the Miner you just Downloaded.
 echo.
 echo.
