@@ -125,7 +125,7 @@ call :colorEcho 03 "                                              %EDITION%"
 echo.
 call :colorEcho 08 "O============================================================================================================O"
 echo.
-IF EXIST "%MINERDIR%\usr.txt" echo. && echo                                   Account(Wallet): %WALLET%
+IF EXIST "%EZDIR%\Wallets\Wallet.txt" echo. && echo                                   Account(Wallet): %WALLET%
 echo.
 echo  ------------------------------------------------------------------------------------------------------------
 call :colorEcho 08 "      Choose a Option[#]"
@@ -182,7 +182,7 @@ echo.
 IF "%MM%" EQU "1" GOTO MENU2CPU
 IF "%MM%" EQU "2" GOTO MENU2AGPU
 IF "%MM%" EQU "3" GOTO MENU2NGPU
-IF "%MM%" EQU "4" GOTO SETACCOUNT
+IF "%MM%" EQU "4" CALL "%WALLETMANAGER%"
 IF "%MM%" EQU "5" GOTO RESETACCOUNT
 IF "%MM%" EQU "6" GOTO DISABLED1
 IF "%MM%" EQU "7" GOTO DISABLED1
@@ -210,7 +210,7 @@ call :colorEcho 03 "                                              %EDITION%"
 echo.
 call :colorEcho 08 "O============================================================================================================O"
 echo.
-IF EXIST "%MINERDIR%\usr.txt" echo. && echo                                   Account(Wallet): %WALLET%
+IF EXIST "%EZDIR%\Wallets\Wallet.txt" echo. && echo                                   Account(Wallet): %WALLET%
 echo.
 echo  ------------------------------------------------------------------------------------------------------------
 call :colorEcho 08 "        CPU Miners; "
@@ -278,7 +278,7 @@ call :colorEcho 03 "                                              %EDITION%"
 echo.
 call :colorEcho 08 "O============================================================================================================O"
 echo.
-IF EXIST "%MINERDIR%\usr.txt" echo. && echo                                   Account(Wallet): %WALLET%
+IF EXIST "%EZDIR%\Wallets\Wallet.txt" echo. && echo                                   Account(Wallet): %WALLET%
 echo.
 echo  ------------------------------------------------------------------------------------------------------------
 call :colorEcho 08 "        GPU Miners (AMD) "
@@ -352,7 +352,7 @@ call :colorEcho 03 "                                              %EDITION%"
 echo.
 call :colorEcho 08 "O============================================================================================================O"
 echo.
-IF EXIST "%DIR%\usr.txt" echo. && echo                                   Account(Wallet): %WALLET%
+IF EXIST "%EZDIR%\Wallets\Wallet.txt" echo. && echo                                   Account(Wallet): %WALLET%
 echo.
 echo  ------------------------------------------------------------------------------------------------------------
 call :colorEcho 08 "        GPU Miners (NVIDIA) "
@@ -547,80 +547,6 @@ if %ERRORLEVEL% EQU 0 call :colorEcho 0A  "   DONE!"
 timeout /t 2 /NOBREAK>NUL
 GOTO MENU
 
-:SETACCOUNT
-cls
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-echo This allows you to set a Automatic "Fill In" Variable for the Miners. Setting 
-echo  this up will make you not have to put in your Wallet or Email address in the 
-echo User(wallet) field when you start mining.
-echo.
-echo.
-echo.
-echo.
-echo To Reset your Account use Option 5 at the Main Menu.
-echo.
-echo.
-echo.
-echo.
-echo Set Automatic Account/Wallet Login:
-set "WALLET="
-set /P WALLET=
-echo.
-cls
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-echo.
-echo You have set your Account to: %WALLET%
-echo %WALLET%>%MINERDIR%\usr.txt
-timeout /t 5 /NOBREAK>NUL
-GOTO MENU
 
 :DISABLED1
 cls
