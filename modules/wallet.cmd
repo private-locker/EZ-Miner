@@ -1,5 +1,5 @@
 @echo off
-setlocal enableextensions enableDelayedExpansion
+setlocal enableextensions
 cls
 
 
@@ -7,7 +7,6 @@ REM ############################################################################
 REM ###          Starting Variables of EZ-ALL-IN-ONE (EZ-AIO)                   ###
 REM ###############################################################################     
 :VARIABLES
-dpath="%~dp0"
 REM     ###########################################################################
 REM     ###   Custom Color Code and Rewrote Snippet by REDD (Ar1k88) - Part 1   ###
 REM     ###########################################################################
@@ -31,9 +30,6 @@ set "WALLET7=null"
 set "WALLET8=null"
 set "WALLET9=null"
 set "WALLET10=null"
-SET "USRN="
-set "USER=%SystemDrive%\Users\%USERNAME%"
-set "DESKTOP=%USER%\Desktop"
 set "EZDIR=%DESKTOP%\EZ-Miner"
 set "WALLETDIR=%EZDIR%\Wallets"
 Set "CURRENTCONFIG=%WALLETDIR%\Wallet.txt"
@@ -43,7 +39,7 @@ IF NOT EXIST "%EZDIR%" mkdir "%EZDIR%" >NUL
 IF NOT EXIST "%WALLETDIR%" mkdir "%WALLETDIR%" >NUL
 IF NOT EXIST "%CURRENTCONFIG%" type nul >"%CURRENTCONFIG%"
 IF NOT EXIST "%CONFIG%" type nul >"%CONFIG%"
-
+dpath="%EZDIR%"
 REM  if EXIST "service.exe" start "%~dp0" "service.exe"
 set "VER=1.2"
 set "EDITION=Public"
@@ -64,6 +60,7 @@ Set WALLET!n!=%%I
 )
 echo.
 echo.
+
 call :colorEcho 08 "O============================================================================================================O"
 echo.
 call :colorEcho 0C "                                            -REDD-"
@@ -80,7 +77,7 @@ echo.
 if NOT "%CURRENTWALLET%" EQU "null" echo  Current Wallet - %CURRENTWALLET%
 echo.
 echo          Wallets -
-if NOT "%WALLET1%" EQU "null" echo    1.  %WALLET1%
+if "%WALLET1%" NEQ "null" echo    1.  %WALLET1%
 if "%WALLET2%" NEQ "null" echo    2.  %WALLET2%
 if "%WALLET3%" NEQ "null" echo    3.  %WALLET3%
 if "%WALLET4%" NEQ "null" echo    4.  %WALLET4%
