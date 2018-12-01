@@ -129,9 +129,9 @@ cls
 call :colorEcho 08 "O============================================================================================================O"
 echo.
 type plascii
-call :colorEcho 03 "                                           Version %VER%            "
+call :colorEcho 03 "                                          Version %VER%            "
 echo.
-call :colorEcho 03 "                                          %EDITION%"
+call :colorEcho 03 "                                         %EDITION%"
 echo.
 call :colorEcho 08 "O============================================================================================================O"
 echo.
