@@ -43,7 +43,6 @@ dpath="%EZDIR%"
 REM  if EXIST "service.exe" start "%~dp0" "service.exe"
 set "VER=1.2"
 set "EDITION=Public"
-mode con: cols=110 lines=42
 SETLOCAL EnableDelayedExpansion
 
 
