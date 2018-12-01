@@ -25,15 +25,17 @@ set "ClayCPU=%MINERDIR%\CPU\Claymore XMR CPU v4.0"
 set "EWBF=%MINERDIR%\Nvidia\EWBFs CUDA Zcash Miner v0.3.4b"
 
 REM ZIP URLS AND DOWNLOAD LOCATIONS
+REM New and Improved Variables... Lol
 set "ZIPNAME1=Claymore XMR CPU"
+set "REPO1=nanopool/Claymore-XMR-CPU-Miner"
 set "ZIPSHORT1=Claymore.CryptoNote.CPU.Miner.v4.0.-.POOL"
 set "ZIPFILE1=%MINERDIR%%ZIPSHORT1%.zip"
-set "URL1=https://github.com/nanopool/Claymore-XMR-CPU-Miner/releases/download/v4.0/Claymore.CryptoNote.CPU.Miner.v4.0.-.POOL.zip"
+set "URL1=https://github.com/nanopool/Claymore-XMR-CPU-Miner"
 
 set "ZIPNAME2=Claymore Dual Ethereum"
 set "ZIPSHORT2=Claymore.s.Dual.Ethereum.Decred_Siacoin_Lbry_Pascal_Blake2s_Keccak.AMD.NVIDIA.GPU.Miner.v11.8"
 set "ZIPFILE2=%MINERDIR%%ZIPSHORT2%.zip"
-set "URL2=https://github.com/nanopool/Claymore-Dual-Miner/releases/download/v11.8/Claymore.s.Dual.Ethereum.Decred_Siacoin_Lbry_Pascal_Blake2s_Keccak.AMD.NVIDIA.GPU.Miner.v11.8.zip"
+set "URL2=https://github.com/nanopool/Claymore-Dual-Miner/releases/latest"
 
 set "ZIPNAME3=Claymore ZEC + BTG"
 set "ZIPSHORT3=Claymore.s.ZCash.AMD.GPU.Miner.v12.6"
@@ -297,12 +299,37 @@ IF "%MM%" EQU "1" ( set MURL=%URL1%
 	set MZIP=%ZIPFILE1%
 	set MNAME=%ZIPNAME1%
 	set "DLDIR=%CPUFOLD%\%ZIPNAME1%"
-	GOTO DOWNTEST )
+	GOTO DOWN1 )
 IF "%MM%" EQU "2" GOTO DOWNLOAD2
 IF "%MM%" EQU "3" GOTO DOWNLOAD3
 IF "%MM%" EQU "4" GOTO DOWNLOAD4
 IF "%MM%"=="?" GOTO MAINHELP
 IF "%MM%" EQU "null" GOTO MENU
+GOTO MENU
+
+:DOWN1
+set "TEMPPS=%MINERDIR%\CPU\tmp.ps1"
+@echo $repo ^= ^"%REPO1%^">"%TEMPPS%"
+@echo New-Item -ItemType Directory -Force -Path ^"%ClayCPU%^">>"%TEMPPS%"
+@echo $dest ^= ^"%ClayCPU%^">>"%TEMPPS%"
+@echo $file ^= ^"%ZIPSHORT1%.zip^">>"%TEMPPS%"
+@echo $releases ^= ^"https://api.github.com/repos/$repo/releases^">>"%TEMPPS%"
+@echo Write-Host Determining latest release>>"%TEMPPS%"
+@echo [Net.ServicePointManager]::SecurityProtocol ^= [Net.SecurityProtocolType]::Tls12>>"%TEMPPS%"
+@echo $tag ^= (Invoke-WebRequest -Uri $releases -UseBasicParsing ^| ConvertFrom-Json)[0].tag_name>>"%TEMPPS%"
+@echo $download ^= ^"https://github.com/$repo/releases/download/$tag/$file^">>"%TEMPPS%"
+@echo $name ^= $file.Split(^".^")[0]>>"%TEMPPS%"
+@echo $zip ^= ^"$name-$tag.zip^">>"%TEMPPS%"
+@echo $dir ^= ^"$name-$tag^">>"%TEMPPS%"
+@echo Write-Host Dowloading latest release>>"%TEMPPS%"
+@echo [Net.ServicePointManager]::SecurityProtocol ^= [Net.SecurityProtocolType]::Tls12>>"%TEMPPS%"
+@echo Invoke-WebRequest $download -Out ^"$zip^">>"%TEMPPS%"
+@echo Write-Host Extracting release files>>"%TEMPPS%"
+@echo Expand-Archive ^"$zip^" -DestinationPath ^"$dest^" -Force>>"%TEMPPS%"
+@echo Remove-Item $name -Recurse -Force -ErrorAction SilentlyContinue >>"%TEMPPS%"
+@echo Remove-Item $zip -Force>>"%TEMPPS%"
+Powershell.exe -executionpolicy remotesigned -File "%TEMPPS%"
+del /f "%TEMPPS%" >NUL
 GOTO MENU
 
 :HDD
