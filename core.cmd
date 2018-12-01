@@ -51,7 +51,7 @@ timeout /t 2 /NOBREAK>NUL
 	mkdir "%EZDIR%" 
 )
 :CHKRUNNINGDIR
-IF "%EZDIR%\%EXE%" NEQ %0 (
+IF "%EZDIR%\%EXE%" NEQ "%0" (
 	COPY /Y "%~nx0" "%EZDIR%" >NUL
 	COPY /Y "motd" "%EZDIR%" >NUL
 	IF NOT EXIST "%EZDIR%\modules" mkdir "%EZDIR%\modules" >NUL
@@ -63,8 +63,7 @@ IF "%EZDIR%\%EXE%" NEQ %0 (
 	start "New Window" /MAX CMD.exe /c "%EZDIR%\%EXE%"
 	exit /B
 ) ELSE (
-	echo Currently in the working EZ-Miner Directory.
-	echo Moving to EZ-Miner Directory..
+	echo Currently in the working EZ-Miner Directory..
 	dpath="%EZDIR%"
 )
 IF EXIST "%MINERDIR%" ( echo EZ-Miner Downloader Directory - 
