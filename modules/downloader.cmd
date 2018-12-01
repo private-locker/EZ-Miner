@@ -25,22 +25,22 @@ set "ClayCPU=%MINERDIR%\CPU\Claymore XMR CPU v4.0"
 set "EWBF=%MINERDIR%\Nvidia\EWBFs CUDA Zcash Miner v0.3.4b"
 
 REM ZIP URLS AND DOWNLOAD LOCATIONS
-set "ZIPNAME1=Claymore XMR CPU v4.0"
+set "ZIPNAME1=Claymore XMR CPU"
 set "ZIPSHORT1=Claymore.CryptoNote.CPU.Miner.v4.0.-.POOL"
 set "ZIPFILE1=%MINERDIR%%ZIPSHORT1%.zip"
 set "URL1=https://github.com/nanopool/Claymore-XMR-CPU-Miner/releases/download/v4.0/Claymore.CryptoNote.CPU.Miner.v4.0.-.POOL.zip"
 
-set "ZIPNAME2=Claymore Dual Ethereum v11.8"
+set "ZIPNAME2=Claymore Dual Ethereum"
 set "ZIPSHORT2=Claymore.s.Dual.Ethereum.Decred_Siacoin_Lbry_Pascal_Blake2s_Keccak.AMD.NVIDIA.GPU.Miner.v11.8"
 set "ZIPFILE2=%MINERDIR%%ZIPSHORT2%.zip"
 set "URL2=https://github.com/nanopool/Claymore-Dual-Miner/releases/download/v11.8/Claymore.s.Dual.Ethereum.Decred_Siacoin_Lbry_Pascal_Blake2s_Keccak.AMD.NVIDIA.GPU.Miner.v11.8.zip"
 
-set "ZIPNAME3=Claymore ZEC + BTG v12.6"
+set "ZIPNAME3=Claymore ZEC + BTG"
 set "ZIPSHORT3=Claymore.s.ZCash.AMD.GPU.Miner.v12.6"
 set "ZIPFILE3=%MINERDIR%%ZIPSHORT3%.zip"
 set "URL3=https://github.com/nanopool/ClaymoreZECMiner/releases/download/v12.6/Claymore.s.ZCash.AMD.GPU.Miner.v12.6.zip"
 
-set "ZIPNAME4=EWBFs CUDA Zcash Miner v0.3.4b"
+set "ZIPNAME4=EWBFs CUDA Zcash Miner"
 set "ZIPSHORT4=Zec.miner.0.3.4b"
 set "ZIPFILE4=%MINERDIR%%ZIPSHORT4%.zip"
 set "URL4=https://github.com/nanopool/ewbf-miner/releases/download/v0.3.4b/Zec.miner.0.3.4b.zip"
@@ -413,6 +413,7 @@ if %ERRORLEVEL% EQU 1 call :colorEcho 0C  "   FAIL!" && (
 	GOTO MENU
 )
 if %ERRORLEVEL% EQU 0 call :colorEcho 0A  "   DONE!"
+rem xcopy /s "%DLDIR%" "%DLDIR%\
 
 del /f "%MZIP%" >NUL
 del /f "%DECOMPRESS%" >NUL
