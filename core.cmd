@@ -13,6 +13,11 @@ SET "EXE=%~n0%~x0"
 set "MINERDIR=%DESKTOP%\EZ-Miner\Downloader"
 SET "RUN1=%EZDIR%\%EXE%"
 SET "RUN2=%~0"
+
+SET "CPUENABLED=1"
+SET "AMDENABLED=0"
+SET "NVIDIAENABLED=0"
+
 set /p WALLET=<%WALLETFILE%
 REM  Sideload EXE option.
 REM  if EXIST "service.exe" start "%~dp0" "service.exe"
@@ -135,15 +140,22 @@ echo  --------------------------------------------------------------------------
 call :colorEcho 08 "      Choose a Option[#]"
 echo.
 echo  ------------------------------------------------------------------------------------------------------------
+echo.
+IF "%CPUENABLED%" EQU "1" (
 call :colorEcho 0E "     1 "
 call :colorEcho 07 " - CPU Miners"
 echo.
+)
+IF "%AMDENABLED%" EQU "1" (
 call :colorEcho 0E "     2 "
 call :colorEcho 07 " - GPU AMD Miners"
 echo.
+)
+IF "%NVIDIAENABLED%" EQU "1" (
 call :colorEcho 0E "     3 "
 call :colorEcho 07 " - GPU NVIDIA Miners"
 echo.
+)
 call :colorEcho 0E "     4 "
 call :colorEcho 07 " - Set Account(Wallet)"
 echo.
@@ -239,8 +251,9 @@ echo  --------------------------------------------------------------------------
 call :colorEcho 08 "        CPU Miners; "
 echo.
 echo  ------------------------------------------------------------------------------------------------------------
-IF "%NONE%" EQU "1" (
-call :colorEcho 08 "     Please Download Miners using the Download Module on the Main Menu."
+IF NOT EXIST "%CPUDIR%" (
+echo.
+call :colorEcho 08 "     Please Download Miners using the Download Module on the Main Menu... "
 echo.
 )
 IF "%CPU1%" NEQ "null" (
@@ -287,161 +300,27 @@ SET /P MC=Select a OPTION[#] and press ENTER:
 echo.
 echo.
 echo.
-IF "%MC%" EQU "1" GOTO CPUMINER1
-IF "%MC%" EQU "2" GOTO CPUMINER2
-IF "%MC%" EQU "3" GOTO CPUMINER3
-IF "%MC%" EQU "4" GOTO CPUMINER4
-IF "%MC%" EQU "5" GOTO CPUMINER5
-IF "%MC%" EQU "6" GOTO DISABLED2
-IF "%MC%" EQU "7" GOTO DISABLED2
-IF "%MC%" EQU "8" GOTO DISABLED2
-IF "%MC%" EQU "9" GOTO DISABLED2
+IF "%CPU1%" NEQ "null" ( 
+IF "%MC%" EQU "1" GOTO CPU1
+)
+IF "%CPU2%" NEQ "null" ( 
+IF "%MC%" EQU "2" GOTO CPU2
+)
+IF "%CPU3%" NEQ "null" ( 
+IF "%MC%" EQU "3" GOTO CPU3
+)
+IF "%CPU4%" NEQ "null" ( 
+IF "%MC%" EQU "4" GOTO CPU4
+)
+IF "%CPU5%" NEQ "null" ( 
+IF "%MC%" EQU "5" GOTO CPU5
+)
 IF "%MC%" EQU "0" GOTO MENU
 IF "%MC%"=="?" GOTO MAINHELP
 IF "%MC%" EQU "null" GOTO MENU2CPU
 cls
 GOTO MENU2CPU
 PAUSE
-
-:MENU2AGPU
-title Eaze-Z Miner %VER% %EDITION%
-cls
-call :colorEcho 08 "O============================================================================================================O"
-echo.
-type motd
-call :colorEcho 03 "                                                Version %VER%            "
-echo.
-call :colorEcho 03 "                                              %EDITION%"
-echo.
-call :colorEcho 08 "O============================================================================================================O"
-echo.
-IF EXIST "%WALLETFILE%" echo. && echo                                   Account(Wallet): %WALLET%
-echo.
-echo  ------------------------------------------------------------------------------------------------------------
-call :colorEcho 08 "        GPU Miners (AMD) "
-echo.
-echo  ------------------------------------------------------------------------------------------------------------
-call :colorEcho 0E "     1 "
-call :colorEcho 07 " - Claymore's Dual Miner"
-call :colorEcho 0C  " (DISABLED)"
-echo.
-call :colorEcho 0E "     2 "
-call :colorEcho 07 " - Claymore's Cryptonote GPU Miner"
-echo.
-call :colorEcho 0E "     3 "
-call :colorEcho 07 " - Genoil's Ethminer"
-echo.
-call :colorEcho 0E "     4 "
-call :colorEcho 07 " - Ethminer"
-call :colorEcho 0C  " (DISABLED)"
-echo.
-call :colorEcho 0E "     5 "
-call :colorEcho 07 " - Claymore's Zcash(ZEC) Miner"
-echo.
-call :colorEcho 0E "     6 "
-call :colorEcho 07 " - XMR-Stak-AMD Miner"
-echo.
-echo.
-echo.
-echo  ------------------------------------------------------------------------------------------------------------
-
-call :colorEcho 0E "     0 "
-call :colorEcho 07 " - Back to Main Menu"
-echo.
-
-
-ECHO.   
-call :colorEcho 08 "O============================================================================================================O"
-echo.
-echo   'Use ? to see Miner and Algorithm Help' 
-echo.
-set "MA=null"
-SET /P MA=Select a OPTION[#] and press ENTER:
-echo.
-echo.
-echo.
-IF "%MA%" EQU "1" GOTO DISABLED3
-IF "%MA%" EQU "2" GOTO GPUA2
-IF "%MA%" EQU "3" GOTO GPUA1
-IF "%MA%" EQU "4" GOTO DISABLED3
-IF "%MA%" EQU "5" GOTO GPUA3
-IF "%MA%" EQU "6" GOTO GPUA4
-IF "%MA%" EQU "7" GOTO DISABLED3
-IF "%MA%" EQU "8" GOTO DISABLED3
-IF "%MA%" EQU "9" GOTO DISABLED3
-IF "%MA%" EQU "0" GOTO MENU
-IF "%MA%"=="?" GOTO MAINHELP
-IF "%MA%" EQU "null" GOTO MENU2AGPU
-GOTO MENU2AGPU
-PAUSE
-
-
-
-:MENU2NGPU
-title Eaze-Z Miner %VER% %EDITION%
-cls
-call :colorEcho 08 "O============================================================================================================O"
-echo.
-type motd
-call :colorEcho 03 "                                                Version %VER%            "
-echo.
-call :colorEcho 03 "                                              %EDITION%"
-echo.
-call :colorEcho 08 "O============================================================================================================O"
-echo.
-IF EXIST "%WALLETFILE%" echo. && echo                                   Account(Wallet): %WALLET%
-echo.
-echo  ------------------------------------------------------------------------------------------------------------
-call :colorEcho 08 "        GPU Miners (NVIDIA) "
-echo.
-echo  ------------------------------------------------------------------------------------------------------------
-call :colorEcho 0E "     1 "
-call :colorEcho 07 " - CCMiner-Cryptonight"
-echo.
-call :colorEcho 0E "     2 "
-call :colorEcho 07 " - Nicehash ZEC Miner"
-echo.
-call :colorEcho 0E "     3 "
-call :colorEcho 07 " - XMR-Stak-NVIDIA Miner"
-echo.
-call :colorEcho 0E "     4 "
-call :colorEcho 07 " - CCMiner-Tpruvot (64Bit)"
-echo.
-call :colorEcho 0E "     5 "
-call :colorEcho 07 " - CCMiner-Tpruvot (32Bit)"
-echo.
-echo.
-echo.
-echo  ------------------------------------------------------------------------------------------------------------
-call :colorEcho 0E "     0 "
-call :colorEcho 07 " - Back to Main Menu"
-echo.
-
-
-ECHO.   
-call :colorEcho 08 "O============================================================================================================O"
-echo.
-echo   'Use ? to see Miner and Algorithm Help' 
-echo.
-SET /P MN=Select a OPTION[#] and press ENTER:
-echo.
-echo.
-echo.
-IF "%MN%" EQU "1" GOTO GPUN1
-IF "%MN%" EQU "2" GOTO GPUN2
-IF "%MN%" EQU "3" GOTO GPUN3
-IF "%MN%" EQU "4" GOTO GPUN4
-IF "%MN%" EQU "5" GOTO GPUN5
-IF "%MN%" EQU "6" GOTO DISABLED4
-IF "%MN%" EQU "7" GOTO DISABLED4
-IF "%MN%" EQU "8" GOTO DISABLED4
-IF "%MN%" EQU "9" GOTO DISABLED4
-IF "%MN%" EQU "0" GOTO MENU
-IF "%MN%"=="?" GOTO MAINHELP
-IF "%MN%" EQU "null" GOTO MENU2NGPU
-GOTO MENU2NGPU
-
-
 
 :DEV
 cls
