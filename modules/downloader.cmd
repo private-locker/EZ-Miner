@@ -5,6 +5,7 @@ for /F "tokens=1,2 delims=#" %%a in ('"prompt #$H#$E# & echo on & for %%b in (1)
   set "DEL=%%a"
 )
 cls
+
 REM VARIABLES
 set "LOCALDIR=%~dp0"
 set "DESKTOP=%USERPROFILE%\Desktop"
@@ -21,22 +22,22 @@ set "CPUFOLD=%MINERDIR%\CPU"
 REM ZIP URLS AND DOWNLOAD LOCATIONS
 set "ZIPNAME1=Claymore XMR CPU v4.0"
 set "ZIPSHORT1=Claymore.CryptoNote.CPU.Miner.v4.0.-.POOL"
-set "ZIPFILE1=%LOCALDIR%%ZIPSHORT1%.zip"
+set "ZIPFILE1=%MINERDIR%%ZIPSHORT1%.zip"
 set "URL1=https://github.com/nanopool/Claymore-XMR-CPU-Miner/releases/download/v4.0/Claymore.CryptoNote.CPU.Miner.v4.0.-.POOL.zip"
 
 set "ZIPNAME2=Claymore Dual Ethereum v11.8"
 set "ZIPSHORT2=Claymore.s.Dual.Ethereum.Decred_Siacoin_Lbry_Pascal_Blake2s_Keccak.AMD.NVIDIA.GPU.Miner.v11.8"
-set "ZIPFILE2=%LOCALDIR%%ZIPSHORT2%.zip"
+set "ZIPFILE2=%MINERDIR%%ZIPSHORT2%.zip"
 set "URL2=https://github.com/nanopool/Claymore-Dual-Miner/releases/download/v11.8/Claymore.s.Dual.Ethereum.Decred_Siacoin_Lbry_Pascal_Blake2s_Keccak.AMD.NVIDIA.GPU.Miner.v11.8.zip"
 
 set "ZIPNAME3=Claymore ZEC + BTG v12.6"
 set "ZIPSHORT3=Claymore.s.ZCash.AMD.GPU.Miner.v12.6"
-set "ZIPFILE3=%LOCALDIR%%ZIPSHORT3%.zip"
+set "ZIPFILE3=%MINERDIR%%ZIPSHORT3%.zip"
 set "URL3=https://github.com/nanopool/ClaymoreZECMiner/releases/download/v12.6/Claymore.s.ZCash.AMD.GPU.Miner.v12.6.zip"
 
 set "ZIPNAME4=EWBFs CUDA Zcash Miner v0.3.4b"
 set "ZIPSHORT4=Zec.miner.0.3.4b"
-set "ZIPFILE4=%LOCALDIR%%ZIPSHORT4%.zip"
+set "ZIPFILE4=%MINERDIR%%ZIPSHORT4%.zip"
 set "URL4=https://github.com/nanopool/ewbf-miner/releases/download/v0.3.4b/Zec.miner.0.3.4b.zip"
 
 set "ZIPNAME5="
@@ -192,7 +193,7 @@ GOTO DOWNTEST )
 IF "%MM%" EQU "2" ( set MURL=%URL3%
 set MZIP=%ZIPFILE3%
 set MNAME=%ZIPNAME3%
-set "DLDIR=%AMDFOLD%"
+set "DLDIR=%AMDFOLD%\%ZIPNAME3%"
 GOTO DOWNTEST )
 IF "%MM%" EQU "3" GOTO CPU
 IF "%MM%" EQU "4" GOTO HDD
@@ -244,7 +245,7 @@ GOTO DOWNTEST )
 IF "%MM%" EQU "2" ( set MURL=%URL4%
 set MZIP=%ZIPFILE4%
 set MNAME=%ZIPNAME4%
-set "DLDIR=%NVIDFOLD%"
+set "DLDIR=%NVIDFOLD%\%ZIPNAME4%"
 GOTO DOWNTEST )
 IF "%MM%" EQU "3" GOTO CPU
 IF "%MM%" EQU "4" GOTO HDD
@@ -290,7 +291,7 @@ IF "%MM%" EQU "0" GOTO MENU
 IF "%MM%" EQU "1" ( set MURL=%URL1%
 set MZIP=%ZIPFILE1%
 set MNAME=%ZIPNAME1%
-set "DLDIR=%CPUFOLD%"
+set "DLDIR=%CPUFOLD%\%ZIPNAME1%"
 GOTO DOWNTEST )
 IF "%MM%" EQU "2" GOTO DOWNLOAD2
 IF "%MM%" EQU "3" GOTO DOWNLOAD3
@@ -383,7 +384,7 @@ GOTO MENU
 :DOWNTEST
 call :colorEcho 09 "Acquiring %MNAME%..."
 echo.
-"%MINERDIR%\%WGET%" %MURL% --no-check-certificate -q
+"%MINERDIR%\%WGET%" %MURL% --no-check-certificate -q -O "%MZIP%"
 @echo ZipFile="%MZIP%">"%DECOMPRESS%"
 @echo ExtractTo="%DLDIR%">>"%DECOMPRESS%"
 @echo Set fso = CreateObject("Scripting.FileSystemObject")>>"%DECOMPRESS%"
