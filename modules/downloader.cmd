@@ -18,6 +18,11 @@ set "WGET=wget.exe"
 set "AMDFOLD=%MINERDIR%\AMD"
 set "NVIDFOLD=%MINERDIR%\Nvidia"
 set "CPUFOLD=%MINERDIR%\CPU"
+set "ClayEthAMD=%MINERDIR%\AMD\Claymore.s.Dual.Ethereum.Decred_Siacoin_Lbry_Pascal_Blake2s_Keccak.AMD.NVIDIA.GPU.Miner.v11.8"
+set "ClayEthENVID=%MINERDIR%\Nvidia\Claymore.s.Dual.Ethereum.Decred_Siacoin_Lbry_Pascal_Blake2s_Keccak.AMD.NVIDIA.GPU.Miner.v11.8"
+set "ClayZEC=%MINERDIR%\AMD\Claymore ZEC + BTG v12.6"
+set "ClayCPU=%MINERDIR%\CPU\Claymore XMR CPU v4.0"
+set "EWBF=%MINERDIR%\Nvidia\EWBFs CUDA Zcash Miner v0.3.4b"
 
 REM ZIP URLS AND DOWNLOAD LOCATIONS
 set "ZIPNAME1=Claymore XMR CPU v4.0"
@@ -186,15 +191,15 @@ set "MM=null"
 SET /P MM=Select a OPTION[#] and press ENTER: 
 IF "%MM%" EQU "0" GOTO MENU
 IF "%MM%" EQU "1" ( set MURL=%URL2%
-set MZIP=%ZIPFILE2%
-set MNAME=%ZIPNAME2%
-set "DLDIR=%AMDFOLD%"
-GOTO DOWNTEST )
+	set MZIP=%ZIPFILE2%
+	set MNAME=%ZIPNAME2%
+	set "DLDIR=%AMDFOLD%"
+	GOTO DOWNTEST )
 IF "%MM%" EQU "2" ( set MURL=%URL3%
-set MZIP=%ZIPFILE3%
-set MNAME=%ZIPNAME3%
-set "DLDIR=%AMDFOLD%\%ZIPNAME3%"
-GOTO DOWNTEST )
+	set MZIP=%ZIPFILE3%
+	set MNAME=%ZIPNAME3%
+	set "DLDIR=%AMDFOLD%\%ZIPNAME3%"
+	GOTO DOWNTEST )
 IF "%MM%" EQU "3" GOTO CPU
 IF "%MM%" EQU "4" GOTO HDD
 IF "%MM%"=="?" GOTO MAINHELP
@@ -238,15 +243,15 @@ set "MM=null"
 SET /P MM=Select a OPTION[#] and press ENTER: 
 IF "%MM%" EQU "0" GOTO MENU
 IF "%MM%" EQU "1" ( set MURL=%URL2%
-set MZIP=%ZIPFILE2%
-set MNAME=%ZIPNAME2%
-set "DLDIR=%NVIDFOLD%"
-GOTO DOWNTEST )
+	set MZIP=%ZIPFILE2%
+	set MNAME=%ZIPNAME2%
+	set "DLDIR=%NVIDFOLD%"
+	GOTO DOWNTEST )
 IF "%MM%" EQU "2" ( set MURL=%URL4%
-set MZIP=%ZIPFILE4%
-set MNAME=%ZIPNAME4%
-set "DLDIR=%NVIDFOLD%\%ZIPNAME4%"
-GOTO DOWNTEST )
+	set MZIP=%ZIPFILE4%
+	set MNAME=%ZIPNAME4%
+	set "DLDIR=%NVIDFOLD%\%ZIPNAME4%"
+	GOTO DOWNTEST )
 IF "%MM%" EQU "3" GOTO CPU
 IF "%MM%" EQU "4" GOTO HDD
 IF "%MM%"=="?" GOTO MAINHELP
@@ -289,10 +294,10 @@ set "MM=null"
 SET /P MM=Select a OPTION[#] and press ENTER: 
 IF "%MM%" EQU "0" GOTO MENU
 IF "%MM%" EQU "1" ( set MURL=%URL1%
-set MZIP=%ZIPFILE1%
-set MNAME=%ZIPNAME1%
-set "DLDIR=%CPUFOLD%\%ZIPNAME1%"
-GOTO DOWNTEST )
+	set MZIP=%ZIPFILE1%
+	set MNAME=%ZIPNAME1%
+	set "DLDIR=%CPUFOLD%\%ZIPNAME1%"
+	GOTO DOWNTEST )
 IF "%MM%" EQU "2" GOTO DOWNLOAD2
 IF "%MM%" EQU "3" GOTO DOWNLOAD3
 IF "%MM%" EQU "4" GOTO DOWNLOAD4
@@ -384,6 +389,7 @@ GOTO MENU
 :DOWNTEST
 call :colorEcho 09 "Acquiring %MNAME%..."
 echo.
+if not exist "%DLDIR%" mkdir "%DLDIR%"
 "%MINERDIR%\%WGET%" %MURL% --no-check-certificate -q -O "%MZIP%" --show-progress --progress=bar
 @echo ZipFile="%MZIP%">"%DECOMPRESS%"
 @echo ExtractTo="%DLDIR%">>"%DECOMPRESS%"
@@ -401,10 +407,10 @@ call :colorEcho 0A "Decompressing %MNAME%.zip..."
 call "%DECOMPRESS%"
 timeout /t 5 /NOBREAK>NUL
 if %ERRORLEVEL% EQU 1 call :colorEcho 0C  "   FAIL!" && (
-echo Returning to Main Menu due to Decompressing Error.
-timeout /t 2 /NOBREAK >NUL
-echo.
-GOTO MENU
+	echo Returning to Main Menu due to Decompressing Error.
+	timeout /t 2 /NOBREAK >NUL
+	echo.
+	GOTO MENU
 )
 if %ERRORLEVEL% EQU 0 call :colorEcho 0A  "   DONE!"
 
