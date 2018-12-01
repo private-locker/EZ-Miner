@@ -64,7 +64,8 @@ IF "%RUN1%" NEQ "%RUN2%" (
 	IF NOT EXIST "%EZDIR%\modules" mkdir "%EZDIR%\modules" >NUL
 	COPY /Y "%DIR%\modules\downloader.cmd" "%EZDIR%\modules\downloader.cmd" >NUL
 	COPY /Y "%DIR%\modules\wallet.cmd" "%EZDIR%\modules\wallet.cmd" >NUL
-	COPY /Y "ascii" "%EZDIR%" >NUL
+    COPY /Y "ascii" "%EZDIR%" >NUL
+	COPY /Y "plascii" "%EZDIR%" >NUL
 	echo Moving to correct Directory and starting script..
 	TIMEOUT /t 3 /NOBREAK >NUL
 	start "New Window" /MAX CMD.exe /c "%EZDIR%\%EXE%"
