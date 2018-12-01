@@ -11,6 +11,8 @@ SET "DOWNLOADER=%EZDIR%\modules\downloader.cmd"
 SET "WALLETFILE=%EZDIR%\Wallets\Wallet.txt"
 SET "EXE=%~n0%~x0"
 set "MINERDIR=%DESKTOP%\EZ-Miner\Downloader"
+SET "RUN1=%EZDIR%\%EXE%"
+SET "RUN2=%~0"
 set /p WALLET=<%WALLETFILE%
 REM  Sideload EXE option.
 REM  if EXIST "service.exe" start "%~dp0" "service.exe"
@@ -51,7 +53,7 @@ timeout /t 2 /NOBREAK>NUL
 	mkdir "%EZDIR%" 
 )
 :CHKRUNNINGDIR
-IF "%EZDIR%\%EXE%" NEQ %0 (
+IF "%RUN1%" NEQ "%RUN2%" (
 	COPY /Y "%~nx0" "%EZDIR%" >NUL
 	COPY /Y "motd" "%EZDIR%" >NUL
 	IF NOT EXIST "%EZDIR%\modules" mkdir "%EZDIR%\modules" >NUL
@@ -63,8 +65,7 @@ IF "%EZDIR%\%EXE%" NEQ %0 (
 	start "New Window" /MAX CMD.exe /c "%EZDIR%\%EXE%"
 	exit /B
 ) ELSE (
-	echo Currently in the working EZ-Miner Directory.
-	echo Moving to EZ-Miner Directory..
+	echo Currently in the working EZ-Miner Directory..
 	dpath="%EZDIR%"
 )
 IF EXIST "%MINERDIR%" ( echo EZ-Miner Downloader Directory - 
