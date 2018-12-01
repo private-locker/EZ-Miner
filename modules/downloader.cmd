@@ -309,6 +309,7 @@ GOTO MENU
 
 :DOWN1
 set "TEMPPS=%MINERDIR%\CPU\tmp.ps1"
+IF NOT EXIST "%CPUFOLD%" mkdir "%CPUFOLD%">NUL
 @echo $repo ^= ^"%REPO1%^">"%TEMPPS%"
 @echo New-Item -ItemType Directory -Force -Path ^"%ClayCPU%^">>"%TEMPPS%"
 @echo $dest ^= ^"%ClayCPU%^">>"%TEMPPS%"
