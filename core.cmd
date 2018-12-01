@@ -203,6 +203,25 @@ IF "%MM%" EQU "null" GOTO MENU
 GOTO MENU
 
 :MENU2CPU
+SET "CPU1=null"
+SET "CPU2=null"
+SET "CPU3=null"
+SET "CPU4=null"
+SET "CPU5=null"
+SET "CPUDIR=%EZDIR%\Downloader\CPU"
+SET "CPUDIRLIST=%CPUDIR%\dirlist.lst"
+IF NOT EXIST "%CPUDIR%" ( 
+SET NONE=1 
+)
+IF EXIST "%CPUDIR%" (
+SET NONE=0
+dir "%CPUDIR%" /b /a:d > "%CPUDIRLIST%"
+Set n=
+For /F "tokens=*" %%I IN ('type "%CPUDIRLIST%"') DO (
+Set /a n+=1
+Set CPU!n!=%%I
+)
+)
 title Eaze-Z Miner %VER% %EDITION%
 cls
 call :colorEcho 08 "O============================================================================================================O"
@@ -220,21 +239,35 @@ echo  --------------------------------------------------------------------------
 call :colorEcho 08 "        CPU Miners; "
 echo.
 echo  ------------------------------------------------------------------------------------------------------------
+IF "%NONE%" EQU "1" (
+call :colorEcho 08 "     Please Download Miners using the Download Module on the Main Menu."
+echo.
+)
+IF "%CPU1%" NEQ "null" (
 call :colorEcho 0E "     1 "
-call :colorEcho 07 " - CPUMiner-Multi-Wolf"
+call :colorEcho 07 " - %CPU1%"
 echo.
+)
+IF "%CPU2%" NEQ "null" (
 call :colorEcho 0E "     2 "
-call :colorEcho 07 " - MinerGate-Cli CPUMiner"
+call :colorEcho 07 " - %CPU2%"
 echo.
+)
+IF "%CPU3%" NEQ "null" (
 call :colorEcho 0E "     3 "
-call :colorEcho 07 " - XMR-Stak-CPU"
+call :colorEcho 07 " - %CPU3%"
 echo.
+)
+IF "%CPU4%" NEQ "null" (
 call :colorEcho 0E "     4 "
-call :colorEcho 07 " - CPU-Miner-Multi-Tpruvot (64Bit)"
+call :colorEcho 07 " - %CPU4%"
 echo.
+)
+IF "%CPU5%" NEQ "null" (
 call :colorEcho 0E "     5 "
-call :colorEcho 07 " - CPU-Miner-Multi-Tpruvot (32Bit)"
+call :colorEcho 07 " - %CPU5%"
 echo.
+)
 echo.
 echo.
 echo  ------------------------------------------------------------------------------------------------------------
