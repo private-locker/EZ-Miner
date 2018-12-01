@@ -384,7 +384,7 @@ GOTO MENU
 :DOWNTEST
 call :colorEcho 09 "Acquiring %MNAME%..."
 echo.
-"%MINERDIR%\%WGET%" %MURL% --no-check-certificate -q -O "%MZIP%"
+"%MINERDIR%\%WGET%" %MURL% --no-check-certificate -q -O "%MZIP%" --show-progress --progress=bar
 @echo ZipFile="%MZIP%">"%DECOMPRESS%"
 @echo ExtractTo="%DLDIR%">>"%DECOMPRESS%"
 @echo Set fso = CreateObject("Scripting.FileSystemObject")>>"%DECOMPRESS%"
