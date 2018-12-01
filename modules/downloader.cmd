@@ -23,6 +23,8 @@ set "ClayEthENVID=%MINERDIR%\Nvidia\Claymore.s.Dual.Ethereum.Decred_Siacoin_Lbry
 set "ClayZEC=%MINERDIR%\AMD\Claymore ZEC + BTG v12.6"
 set "ClayCPU=%MINERDIR%\CPU\Claymore XMR CPU v4.0"
 set "EWBF=%MINERDIR%\Nvidia\EWBFs CUDA Zcash Miner v0.3.4b"
+REM REDD NOTES - DONT TOUCH
+.\curl.exe -s "https://api.github.com/repos/nanopool/Claymore-XMR-CPU-Miner/releases/latest" | .\jq.exe -r '.assets[] | .browser_download_url' >text.txt
 
 REM ZIP URLS AND DOWNLOAD LOCATIONS
 REM New and Improved Variables... Lol
