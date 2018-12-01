@@ -127,10 +127,10 @@ title Eaze-Z Miner %VER% %EDITION%
 cls
 call :colorEcho 08 "O============================================================================================================O"
 echo.
-type motd
-call :colorEcho 03 "                                                Version %VER%            "
+type plascii
+call :colorEcho 03 "                                           Version %VER%            "
 echo.
-call :colorEcho 03 "                                              %EDITION%"
+call :colorEcho 03 "                                          %EDITION%"
 echo.
 call :colorEcho 08 "O============================================================================================================O"
 echo.
@@ -244,7 +244,7 @@ title Eaze-Z Miner %VER% %EDITION%
 cls
 call :colorEcho 08 "O============================================================================================================O"
 echo.
-type motd
+type plascii
 call :colorEcho 03 "                                                Version %VER%            "
 echo.
 call :colorEcho 03 "                                              %EDITION%"
