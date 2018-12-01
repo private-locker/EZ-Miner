@@ -51,7 +51,7 @@ timeout /t 2 /NOBREAK>NUL
 	mkdir "%EZDIR%" 
 )
 :CHKRUNNINGDIR
-IF "%EZDIR%\%EXE%" NEQ "%0" (
+IF "%EZDIR%\%EXE%" NEQ %0 (
 	COPY /Y "%~nx0" "%EZDIR%" >NUL
 	COPY /Y "motd" "%EZDIR%" >NUL
 	IF NOT EXIST "%EZDIR%\modules" mkdir "%EZDIR%\modules" >NUL
@@ -116,7 +116,7 @@ pause
 
 
 :MENU
-set /p WALLET=<%WALLETFILE%
+set /p WALLET= < "%WALLETFILE%" 
 title Eaze-Z Miner %VER% %EDITION%
 cls
 call :colorEcho 08 "O============================================================================================================O"
