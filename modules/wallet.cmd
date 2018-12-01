@@ -79,17 +79,19 @@ echo.
 echo.
 if NOT "%CURRENTWALLET%" EQU "null" echo  Current Wallet - %CURRENTWALLET%
 echo.
-echo     Wallets -
-if NOT "%WALLET1%" EQU "null" echo 1.  %WALLET1%
-if "%WALLET2%" NEQ "null" echo 2.  %WALLET2%
-if "%WALLET3%" NEQ "null" echo 3.  %WALLET3%
-if "%WALLET4%" NEQ "null" echo 4.  %WALLET4%
-if "%WALLET5%" NEQ "null" echo 5.  %WALLET5%
-if "%WALLET6%" NEQ "null" echo 6.  %WALLET6%
-if "%WALLET7%" NEQ "null" echo 7.  %WALLET7%
-if 	"%WALLET8%" NEQ "null" echo 8.  %WALLET8%
-if "%WALLET9%" NEQ "null" echo 9.  %WALLET9%
-if "%WALLET10%" NEQ "null" echo 10. %WALLET10%
+echo          Wallets -
+if NOT "%WALLET1%" EQU "null" echo    1.  %WALLET1%
+if "%WALLET2%" NEQ "null" echo    2.  %WALLET2%
+if "%WALLET3%" NEQ "null" echo    3.  %WALLET3%
+if "%WALLET4%" NEQ "null" echo    4.  %WALLET4%
+if "%WALLET5%" NEQ "null" echo    5.  %WALLET5%
+if "%WALLET6%" NEQ "null" echo    6.  %WALLET6%
+if "%WALLET7%" NEQ "null" echo    7.  %WALLET7%
+if "%WALLET8%" NEQ "null" echo    8.  %WALLET8%
+if "%WALLET9%" NEQ "null" echo    9.  %WALLET9%
+if "%WALLET10%" NEQ "null" echo   10. %WALLET10%
+echo.
+echo    0. Exit
 echo.
 call :colorEcho 08 "O============================================================================================================O"
 echo.
