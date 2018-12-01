@@ -1,6 +1,5 @@
 @echo off
 title EZ-Miner Downloader v0.1b
-mode con: cols=70 lines=25
 SETLOCAL EnableDelayedExpansion
 for /F "tokens=1,2 delims=#" %%a in ('"prompt #$H#$E# & echo on & for %%b in (1) do     rem"') do (
   set "DEL=%%a"
