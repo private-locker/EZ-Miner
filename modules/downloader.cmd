@@ -4,7 +4,7 @@ SETLOCAL EnableDelayedExpansion
 for /F "tokens=1,2 delims=#" %%a in ('"prompt #$H#$E# & echo on & for %%b in (1) do     rem"') do (
   set "DEL=%%a"
 )
-
+cls
 REM VARIABLES
 set "LOCALDIR=%~dp0"
 set "DESKTOP=%USERPROFILE%\Desktop"
@@ -14,6 +14,9 @@ set "MINERDIR=%DESKTOP%\EZ-Miner\Downloader"
 set "backup=%DEST%\backup_%date:~-10,2%%date:~-7,2%%date:~-4,4%.zip"
 set "compress=%DEST%\compress.vbs"
 set "WGET=wget.exe"
+set "AMDFOLD=%MINERDIR%\AMD"
+set "NVIDFOLD=%MINERDIR%\Nvidia"
+set "CPUFOLD=%MINERDIR%\CPU"
 
 REM ZIP URLS AND DOWNLOAD LOCATIONS
 set "ZIPNAME1=Claymore XMR CPU v4.0"
@@ -184,10 +187,12 @@ IF "%MM%" EQU "0" GOTO MENU
 IF "%MM%" EQU "1" ( set MURL=%URL2%
 set MZIP=%ZIPFILE2%
 set MNAME=%ZIPNAME2%
+set "DLDIR=%AMDFOLD%"
 GOTO DOWNTEST )
 IF "%MM%" EQU "2" ( set MURL=%URL3%
 set MZIP=%ZIPFILE3%
 set MNAME=%ZIPNAME3%
+set "DLDIR=%AMDFOLD%"
 GOTO DOWNTEST )
 IF "%MM%" EQU "3" GOTO CPU
 IF "%MM%" EQU "4" GOTO HDD
@@ -234,10 +239,12 @@ IF "%MM%" EQU "0" GOTO MENU
 IF "%MM%" EQU "1" ( set MURL=%URL2%
 set MZIP=%ZIPFILE2%
 set MNAME=%ZIPNAME2%
+set "DLDIR=%NVIDFOLD%"
 GOTO DOWNTEST )
 IF "%MM%" EQU "2" ( set MURL=%URL4%
 set MZIP=%ZIPFILE4%
 set MNAME=%ZIPNAME4%
+set "DLDIR=%NVIDFOLD%"
 GOTO DOWNTEST )
 IF "%MM%" EQU "3" GOTO CPU
 IF "%MM%" EQU "4" GOTO HDD
@@ -283,6 +290,7 @@ IF "%MM%" EQU "0" GOTO MENU
 IF "%MM%" EQU "1" ( set MURL=%URL1%
 set MZIP=%ZIPFILE1%
 set MNAME=%ZIPNAME1%
+set "DLDIR=%CPUFOLD%"
 GOTO DOWNTEST )
 IF "%MM%" EQU "2" GOTO DOWNLOAD2
 IF "%MM%" EQU "3" GOTO DOWNLOAD3
@@ -373,9 +381,11 @@ GOTO MENU
 
 
 :DOWNTEST
-"%MINERDIR%\%WGET%" %MURL% --no-check-certificate 
+call :colorEcho 09 "Acquiring %MNAME%..."
+echo.
+"%MINERDIR%\%WGET%" %MURL% --no-check-certificate -q
 @echo ZipFile="%MZIP%">"%DECOMPRESS%"
-@echo ExtractTo="%MINERDIR%\%MNAME%">>"%DECOMPRESS%"
+@echo ExtractTo="%DLDIR%">>"%DECOMPRESS%"
 @echo Set fso = CreateObject("Scripting.FileSystemObject")>>"%DECOMPRESS%"
 @echo If NOT fso.FolderExists(ExtractTo) Then>>"%DECOMPRESS%"
 @echo    fso.CreateFolder(ExtractTo)>>"%DECOMPRESS%"
@@ -386,7 +396,7 @@ GOTO MENU
 @echo Set fso = Nothing>>"%DECOMPRESS%"
 @echo Set objShell = Nothing>>"%DECOMPRESS%"
 
-echo Decompressing %MNAME%.zip...
+call :colorEcho 0A "Decompressing %MNAME%.zip..."
 call "%DECOMPRESS%"
 timeout /t 5 /NOBREAK>NUL
 if %ERRORLEVEL% EQU 1 call :colorEcho 0C  "   FAIL!" && (
