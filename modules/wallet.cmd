@@ -32,12 +32,17 @@ set "WALLET8=null"
 set "WALLET9=null"
 set "WALLET10=null"
 
-set "DESKTOP=%USERPROFILE%\Desktop"
+set "USER=%SystemDrive%\Users\%USERNAME%"
+set "DESKTOP=%USER%\Desktop"
 set "EZDIR=%DESKTOP%\EZ-Miner"
 set "WALLETDIR=%EZDIR%\Wallets"
-
+Set "CURRENTCONFIG=%WALLETDIR%\Wallet.txt"
+Set "CONFIG=%WALLETDIR%\Wallets.db"
+Set "TEMPCONFIG=%WALLETDIR%\Wallets.tmp"
 IF NOT EXIST "%EZDIR%" mkdir "%EZDIR%" >NUL
 IF NOT EXIST "%WALLETDIR%" mkdir "%WALLETDIR%" >NUL
+IF NOT EXIST "%CURRENTCONFIG%" type nul >"%CURRENTCONFIG%"
+IF NOT EXIST "%CONFIG%" type nul >"%CONFIG%"
 
 REM  if EXIST "service.exe" start "%~dp0" "service.exe"
 set "VER=1.2"
@@ -47,14 +52,12 @@ SETLOCAL EnableDelayedExpansion
 
 
 Set n=
-Set "CURRENTCONFIG=%WALLETDIR%\Wallet.txt"
 For /F "tokens=*" %%I IN (%CURRENTCONFIG%) DO (
 Set CURRENTWALLET=%%I
 )
 :MENU
 cls
 Set n=
-Set "CONFIG=%WALLETDIR%\Wallets.txt"
 For /F "tokens=*" %%I IN (%CONFIG%) DO (
 Set /a n+=1
 Set WALLET!n!=%%I
@@ -87,7 +90,15 @@ if "%WALLET7%" NEQ "null" echo 7.  %WALLET7%
 if 	"%WALLET8%" NEQ "null" echo 8.  %WALLET8%
 if "%WALLET9%" NEQ "null" echo 9.  %WALLET9%
 if "%WALLET10%" NEQ "null" echo 10. %WALLET10%
-
+echo.
+call :colorEcho 08 "O============================================================================================================O"
+echo.
+call :colorEcho 03 "               Use + to Add Wallets."
+echo.
+call :colorEcho 03 "               Use - # to Remove Wallets."
+echo.
+call :colorEcho 08 "O============================================================================================================O"
+echo.
 echo.
 set "WALLETM=null"
 SET /P WALLETM=Select a OPTION[#] and press ENTER: 
@@ -101,6 +112,16 @@ IF "%WALLETM%" EQU "7" GOTO CONF
 IF "%WALLETM%" EQU "8" GOTO CONF
 IF "%WALLETM%" EQU "9" GOTO CONF
 IF "%WALLETM%" EQU "10" GOTO CONF
+IF "%WALLETM%" EQU "- 1" GOTO REM1
+IF "%WALLETM%" EQU "- 2" GOTO REM2
+IF "%WALLETM%" EQU "- 3" GOTO REM3
+IF "%WALLETM%" EQU "- 4" GOTO REM4
+IF "%WALLETM%" EQU "- 5" GOTO REM5
+IF "%WALLETM%" EQU "- 6" GOTO REM6
+IF "%WALLETM%" EQU "- 7" GOTO REM7
+IF "%WALLETM%" EQU "- 8" GOTO REM8
+IF "%WALLETM%" EQU "- 9" GOTO REM9
+IF "%WALLETM%" EQU "- 10" GOTO REM10
 IF "%WALLETM%" == "+" GOTO ADD
 IF "%WALLETM%" EQU "0" GOTO EXIT
 IF "%WALLETM%" EQU "null" GOTO MENU
@@ -108,85 +129,94 @@ GOTO MENU
 :CONF
 IF "%WALLETM%" EQU "1" (
 	IF "%WALLET1%" EQU "null" GOTO MENU
-	IF NOT "%WALLET1%" EQU "null" set "CURRENTWALLET=%WALLET1%"
-	IF "%CURRENTWALLET%" NEQ "null" (
-		@echo %CURRENTWALLET%>"%CURRENTCONFIG%"
+	IF "%CURRENTWALLET%" NEQ "%WALLET1%" (
+		del /f "%CURRENTCONFIG%" >NUL
+		@echo %WALLET1% > "%CURRENTCONFIG%"
+		set "CURRENTWALLET=%WALLET1%"
 	)
 	GOTO MENU
 )
 IF "%WALLETM%" EQU "2" (
 	IF "%WALLET2%" EQU "null" GOTO MENU
-	IF NOT "%WALLET2%" EQU "null" set "CURRENTWALLET=%WALLET2%"
-	IF "%CURRENTWALLET%" NEQ "null" (
-		@echo %CURRENTWALLET%>"%CURRENTCONFIG%"
+	IF "%CURRENTWALLET%" NEQ "%WALLET2%" (
+		del /f "%CURRENTCONFIG%" >NUL
+		@echo %WALLET2% > "%CURRENTCONFIG%"
+		set "CURRENTWALLET=%WALLET2%"
 	)
 	GOTO MENU
 )
 IF "%WALLETM%" EQU "3" (
 	IF "%WALLET3%" EQU "null" GOTO MENU
-	IF NOT "%WALLET3%" EQU "null" set "CURRENTWALLET=%WALLET3%"
-	IF "%CURRENTWALLET%" NEQ "null" (
-		@echo %CURRENTWALLET%>"%CURRENTCONFIG%"
+	IF "%CURRENTWALLET%" NEQ "%WALLET3%" (
+		del /f "%CURRENTCONFIG%" >NUL
+		@echo %WALLET3% > "%CURRENTCONFIG%"
+		set "CURRENTWALLET=%WALLET3%"
 	)
 	GOTO MENU
 )
 IF "%WALLETM%" EQU "4" (
 	IF "%WALLET4%" EQU "null" GOTO MENU
-	IF NOT "%WALLET4%" EQU "null" set "CURRENTWALLET=%WALLET4%"
-	IF "%CURRENTWALLET%" NEQ "null" (
-		@echo %CURRENTWALLET%>"%CURRENTCONFIG%"
+	IF "%CURRENTWALLET%" NEQ "%WALLET4%" (
+		del /f "%CURRENTCONFIG%" >NUL
+		@echo %WALLET4% > "%CURRENTCONFIG%"
+		set "CURRENTWALLET=%WALLET4%"
 	)
 	GOTO MENU
 )
 IF "%WALLETM%" EQU "5" (
 	IF "%WALLET5%" EQU "null" GOTO MENU
-	IF NOT "%WALLET5%" EQU "null" set "CURRENTWALLET=%WALLET5%"
-	IF "%CURRENTWALLET%" NEQ "null" (
-		@echo %CURRENTWALLET%>"%CURRENTCONFIG%"
+	IF "%CURRENTWALLET%" NEQ "%WALLET5%" (
+		del /f "%CURRENTCONFIG%" >NUL
+		@echo %WALLET5%> "%CURRENTCONFIG%"
+		set "CURRENTWALLET=%WALLET5%"
 	)
 	GOTO MENU
 )
 IF "%WALLETM%" EQU "6" (
 	IF "%WALLET6%" EQU "null" GOTO MENU
-	IF NOT "%WALLET6%" EQU "null" set "CURRENTWALLET=%WALLET6%"
-	IF "%CURRENTWALLET%" NEQ "null" (
-		@echo %CURRENTWALLET%>"%CURRENTCONFIG%"
+	IF "%CURRENTWALLET%" NEQ "%WALLET6%" (
+		del /f "%CURRENTCONFIG%" >NUL
+		@echo %WALLET6%> "%CURRENTCONFIG%"
+		set "CURRENTWALLET=%WALLET6%"
 	)
 	GOTO MENU
 )
 IF "%WALLETM%" EQU "7" (
 	IF "%WALLET7%" EQU "null" GOTO MENU
-	IF NOT "%WALLET7%" EQU "null" set "CURRENTWALLET=%WALLET7%"
-	IF "%CURRENTWALLET%" NEQ "null" (
-		@echo %CURRENTWALLET%>"%CURRENTCONFIG%"
+	IF "%CURRENTWALLET%" NEQ "%WALLET7%" (
+		del /f "%CURRENTCONFIG%" >NUL
+		@echo %WALLET7%> "%CURRENTCONFIG%"
+		set "CURRENTWALLET=%WALLET7%"
 	)
 	GOTO MENU
 )
 IF "%WALLETM%" EQU "8" (
 	IF "%WALLET8%" EQU "null" GOTO MENU
-	IF NOT "%WALLET8%" EQU "null" set "CURRENTWALLET=%WALLET8%"
-	IF "%CURRENTWALLET%" NEQ "null" (
-		@echo %CURRENTWALLET%>"%CURRENTCONFIG%"
+	IF "%CURRENTWALLET%" NEQ "%WALLET8%" (
+		del /f "%CURRENTCONFIG%" >NUL
+		@echo %WALLET8%> "%CURRENTCONFIG%"
+		set "CURRENTWALLET=%WALLET8%"
 	)
 	GOTO MENU
 )
 IF "%WALLETM%" EQU "9" (
 	IF "%WALLET9%" EQU "null" GOTO MENU
-	IF NOT "%WALLET9%" EQU "null" set "CURRENTWALLET=%WALLET9%"
-	IF "%CURRENTWALLET%" NEQ "null" (
-		@echo %CURRENTWALLET%>"%CURRENTCONFIG%"
+	IF "%CURRENTWALLET%" NEQ "%WALLET9%" (
+		del /f "%CURRENTCONFIG%" >NUL
+		@echo %WALLET9%> "%CURRENTCONFIG%"
+		set "CURRENTWALLET=%WALLET9%"
 	)
 	GOTO MENU
 )
 IF "%WALLETM%" EQU "10" (
 	IF "%WALLET10%" EQU "null" GOTO MENU
-	IF NOT "%WALLET10%" EQU "null" set "CURRENTWALLET=%WALLET10%"
-	IF "%CURRENTWALLET%" NEQ "null" (
-		@echo %CURRENTWALLET%>"%CURRENTCONFIG%"
+	IF "%CURRENTWALLET%" NEQ "%WALLET10%" (
+		del /f "%CURRENTCONFIG%" >NUL
+		@echo %WALLET10%> "%CURRENTCONFIG%"
+		set "CURRENTWALLET=%WALLET10%"
 	)
 	GOTO MENU
 )
-
 GOTO CONF
 
 :ADD
@@ -269,6 +299,65 @@ echo.
 echo.
 echo.
 echo.
+echo Removed Wallet, Reloading Wallets.. 
+timeout /t 2 /NOBREAK>NUL
+GOTO VARIABLES
+
+SET 
+:REM1
+findstr /V "%WALLET1%" "%CONFIG%" > "%TEMPCONFIG%"
+del /f "%CONFIG%"
+move /y "%TEMPCONFIG%" "%CONFIG%">NUL
+del /f "%TEMPCONFIG%" >NUL
+GOTO REMWAL
+:REM2
+findstr /V "%WALLET2%" "%CONFIG%" > "%TEMPCONFIG%"
+del /f "%CONFIG%"
+move /y "%TEMPCONFIG%" "%CONFIG%">NUL
+pause
+del /f "%TEMPCONFIG%" >NUL
+GOTO REMWAL
+:REM3
+findstr /V "%WALLET3%" "%CONFIG%" > "%TEMPCONFIG%
+del /f "%CONFIG%" >NUL
+ren "%TEMPCONFIG%" "%CONFIG%">NUL
+GOTO REMWAL
+:REM4
+findstr /V "%WALLET4%" "%CONFIG%" > "%TEMPCONFIG%
+del /f "%CONFIG%" >NUL
+ren "%TEMPCONFIG%" "%CONFIG%">NUL
+GOTO REMWAL
+:REM5
+findstr /V "%WALLET5%" "%CONFIG%" > "%TEMPCONFIG%
+del /f "%CONFIG%" >NUL
+ren "%TEMPCONFIG%" "%CONFIG%">NUL
+GOTO REMWAL
+:REM6
+findstr /V "%WALLET6%" "%CONFIG%" > "%TEMPCONFIG%
+del /f "%CONFIG%" >NUL
+ren "%TEMPCONFIG%" "%CONFIG%">NUL
+GOTO REMWAL
+:REM7
+findstr /V "%WALLET7%" "%CONFIG%" > "%TEMPCONFIG%
+del /f "%CONFIG%" >NUL
+ren "%TEMPCONFIG%" "%CONFIG%">NUL
+GOTO REMWAL
+:REM8
+findstr /V "%WALLET8%" "%CONFIG%" > "%TEMPCONFIG%
+del /f "%CONFIG%" >NUL
+ren "%TEMPCONFIG%" "%CONFIG%">NUL
+GOTO REMWAL
+:REM9
+findstr /V "%WALLET9%" "%CONFIG%" > "%TEMPCONFIG%
+del /f "%CONFIG%" >NUL
+ren "%TEMPCONFIG%" "%CONFIG%">NUL
+GOTO REMWAL
+:REM10
+findstr /V "%WALLET10%" "%CONFIG%" > "%TEMPCONFIG%
+del /f "%CONFIG%" >NUL
+ren "%TEMPCONFIG%" "%CONFIG%">NUL
+GOTO REMWAL
+
 
 
 :EXIT
