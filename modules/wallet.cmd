@@ -1,5 +1,5 @@
 @echo off
-SETLOCAL EnableDelayedExpansion
+setlocal enableextensions enableDelayedExpansion
 cls
 
 
@@ -31,7 +31,7 @@ set "WALLET7=null"
 set "WALLET8=null"
 set "WALLET9=null"
 set "WALLET10=null"
-
+SET "USRN="
 set "USER=%SystemDrive%\Users\%USERNAME%"
 set "DESKTOP=%USER%\Desktop"
 set "EZDIR=%DESKTOP%\EZ-Miner"
@@ -52,13 +52,13 @@ SETLOCAL EnableDelayedExpansion
 
 
 Set n=
-For /F "tokens=*" %%I IN (%CURRENTCONFIG%) DO (
+For /F "tokens=*" %%I IN ('type "%CURRENTCONFIG%"') DO (
 Set CURRENTWALLET=%%I
 )
 :MENU
 cls
 Set n=
-For /F "tokens=*" %%I IN (%CONFIG%) DO (
+For /F "tokens=*" %%I IN ('type "%CONFIG%"') DO (
 Set /a n+=1
 Set WALLET!n!=%%I
 )
