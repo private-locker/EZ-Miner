@@ -1,5 +1,6 @@
 @echo off
 cls
+if not "%1" == "max" start /MAX cmd /c %0 max & exit/b
 dpath=%~dp0
 cd %DIR%
 set "DIR=%~dp0"
@@ -27,7 +28,7 @@ set VER=1.4b
 REM Detect if Admin Edition of EZ
 if EXIST "%~dp0\admin.exe" set EDITION=ADMIN EDITION
 if NOT EXIST "%~dp0\admin.exe" set EDITION=PUBLIC EDITION
-mode con: cols=110 lines=42
+
 SETLOCAL EnableDelayedExpansion
 for /F "tokens=1,2 delims=#" %%a in ('"prompt #$H#$E# & echo on & for %%b in (1) do     rem"') do (
   set "DEL=%%a"
